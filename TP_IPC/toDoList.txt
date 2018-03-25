@@ -1,0 +1,6 @@
+* Implementar la cola
+* Implementar la cola de pedidos
+* Envio de los Hashes al proceso aplicacion (via pipes)
+* Averiguar uso de semaforos para implementar aplicacion-vista
+
+* A que se refieren con distribuir la carga? 
