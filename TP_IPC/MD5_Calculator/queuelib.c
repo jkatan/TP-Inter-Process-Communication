@@ -2,29 +2,34 @@
 #include <stdio.h>
 #include "queuelib.h"
 
-queue* createQueue(int maxSize)
+queueADT createQueue(int maxSize)
 {
 	
-	queue* newQueue = (queue*) malloc(sizeof(queue));
-	newQueue->front = NULL;
-	newQueue->rear = NULL;
+	queueADT newQueue = (queueADT) malloc(sizeof(queueCDT));
+	newQueue->front = (nodeADT) NULL;
+	newQueue->rear = (nodeADT) NULL;
 	newQueue->maxSize = maxSize;
 	newQueue->actualSize = 0;
 
 	return newQueue;
 }
 
-int isEmptyTheQueue(queue* myQueue)
+int queueCurrentSize(queueADT myQueue)
+{
+	return myQueue->actualSize;
+}
+
+int isEmptyTheQueue(queueADT myQueue)
 {
 	return (myQueue->actualSize == 0) ? 1 : 0;
 }
 
-void enqueElement(queue* myQueue, char* fileToEnque)
+void enqueueElement(queueADT myQueue, char* fileToEnque)
 {
 	
 	if(myQueue->actualSize != myQueue->maxSize)
 	{
-		node* nodeToAdd = (node*) malloc(sizeof(node));
+		nodeADT nodeToAdd = (nodeADT) malloc(sizeof(nodeCDT));
 
 		nodeToAdd->fileName = fileToEnque;
 		nodeToAdd->nextNode = NULL;
@@ -49,7 +54,7 @@ void enqueElement(queue* myQueue, char* fileToEnque)
 	return;
 }
 
-char* dequeElement(queue* myQueue)
+char* dequeueElement(queueADT myQueue)
 {
 	if(isEmptyTheQueue(myQueue)){
 		perror("The queue is empty");

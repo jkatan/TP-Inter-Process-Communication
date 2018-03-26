@@ -1,9 +1,10 @@
-#include "slaveProcess.h"
 #include <stdlib.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include "slaveProcess.h"
+#include "fileDescriptors.h"
 
 char* calculateFileMD5Hash(char* fileName)
 {
@@ -17,18 +18,34 @@ char* calculateFileMD5Hash(char* fileName)
 	int pid = fork();
 	if(pid==0)
 	{
-		char *arguments[] = {"md5sum", fileName, NULL};
-		close(fileDescriptors[0]);
-		dup2(fileDescriptors[1], 1);
-		close(fileDescriptors[1]);
-		execvp(arguments[0], arguments);
+		linkWriteEndOfPipeWithSTDOUT(fileDescriptors);
+		executeMD5HashCommand(fileName);
 	}
-	close(fileDescriptors[1]);
-	dup2(fileDescriptors[0], 0);
-	close(fileDescriptors[0]);
+	
+	linkReadEndOfPipeWithSTDIN(fileDescriptors);
 
 	wait(&status);
 
 	scanf("%s", hash);
 	return hash;
 } 
+
+void linkReadEndOfPipeWithSTDIN(int fileDescriptors[])
+{
+	close(fileDescriptors[1]);
+	dup2(fileDescriptors[0], STDIN);
+	close(fileDescriptors[0]);
+}
+
+void linkWriteEndOfPipeWithSTDOUT(int fileDescriptors[])
+{
+	close(fileDescriptors[0]);
+	dup2(fileDescriptors[1], STDOUT);
+	close(fileDescriptors[1]);
+}
+
+void executeMD5HashCommand(char* fileName)
+{
+	char *arguments[] = {"md5sum", fileName, NULL};
+	execvp(arguments[0], arguments);
+}
