@@ -4,14 +4,16 @@
 
 typedef struct node node;
 
-typedef struct node{
+typedef struct node
+{
 
 	char* fileName;
 	node* nextNode;
 
 }node;
 
-typedef struct queue{
+typedef struct queue
+{
 
 	node* front;
 	node* rear;

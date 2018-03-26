@@ -19,7 +19,8 @@ int isEmptyTheQueue(queue* myQueue)
 	return (myQueue->actualSize == 0) ? 1 : 0;
 }
 
-void enqueElement(queue* myQueue, char* fileToEnque){
+void enqueElement(queue* myQueue, char* fileToEnque)
+{
 	
 	if(myQueue->actualSize != myQueue->maxSize)
 	{
