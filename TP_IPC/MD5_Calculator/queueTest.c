@@ -1,10 +1,12 @@
 #include <stdio.h>
+#include <string.h>
 #include "queuelib.h"
 #include "testLib.h"
 
 void givenAQueue();
 void givenAnElement();
 void givenAQueueWithOneElement();
+void givenAQueueWithTwoElements();
 
 void whenElementIsDequed();
 void whenElementIsEnqueued();
@@ -12,17 +14,22 @@ void whenElementIsEnqueued();
 void thenNullIsReturned();
 void thenSizeIsEqualToOne();
 void thenSizeIsEqualToZero();
+void thenSizeIsEqualToOne();
+void thenTheFirstElementIsReturned();
 
 void emptyQueueTest();
 void enqueueElementTest();
 void dequeueElementTest();
+void dequeueOneOutOfTwoElementsTest();
 
 queueADT queueToTest;
 char* elementToDeque;
 char* elementToEnqueue;
+char* elementDequed;
 
 int testQueueSize = 3;
 char* elementToEnqueueValue = "TestElement";
+char* secondElementToEnqueueValue = "TestElement2";
 
 int main()
 {
@@ -34,6 +41,9 @@ int main()
 
 	printf("Dequeue element test\n");
 	dequeueElementTest();
+
+	printf("Dequeue one out of two element test\n");
+	dequeueOneOutOfTwoElementsTest();
 }
 
 void enqueueElementTest()
@@ -64,6 +74,15 @@ void dequeueElementTest()
 	thenSizeIsEqualToZero();
 }
 
+void dequeueOneOutOfTwoElementsTest()
+{
+	givenAQueueWithTwoElements();
+
+	whenElementIsDequed();
+
+	thenTheFirstElementIsReturned();
+}
+
 void givenAQueue()
 {
 	queueToTest = createQueue(testQueueSize);
@@ -78,6 +97,13 @@ void givenAQueueWithOneElement()
 {
 	queueToTest = createQueue(testQueueSize); //preguntar
 	enqueueElement(queueToTest, elementToEnqueue);
+}
+
+void givenAQueueWithTwoElements()
+{
+	queueToTest = createQueue(testQueueSize);
+	enqueueElement(queueToTest, elementToEnqueueValue);
+	enqueueElement(queueToTest, secondElementToEnqueueValue);
 }
 
 void whenElementIsDequed()
@@ -122,6 +148,18 @@ void thenSizeIsEqualToZero()
 	}
 	else
 	{
-		fail("Size obtained is not 0");
+		fail("Size obtained is not 0 \n");
+	}
+}
+
+void thenTheFirstElementIsReturned()
+{
+	if(strcmp(elementToDeque, elementToEnqueueValue) == 0)
+	{
+		ok();
+	}
+	else
+	{
+		fail("Element dequed different from element expected \n");
 	}
 }

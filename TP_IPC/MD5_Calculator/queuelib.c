@@ -19,7 +19,7 @@ int queueCurrentSize(queueADT myQueue)
 	return myQueue->actualSize;
 }
 
-int isEmptyTheQueue(queueADT myQueue)
+int isEmpty(queueADT myQueue)
 {
 	return (myQueue->actualSize == 0) ? 1 : 0;
 }
@@ -34,7 +34,7 @@ void enqueueElement(queueADT myQueue, char* fileToEnque)
 		nodeToAdd->fileName = fileToEnque;
 		nodeToAdd->nextNode = NULL;
 
-		if(isEmptyTheQueue(myQueue))
+		if(isEmpty(myQueue))
 		{
 			myQueue->front = nodeToAdd;
 			
@@ -56,7 +56,7 @@ void enqueueElement(queueADT myQueue, char* fileToEnque)
 
 char* dequeueElement(queueADT myQueue)
 {
-	if(isEmptyTheQueue(myQueue)){
+	if(isEmpty(myQueue)){
 		perror("The queue is empty");
 		return NULL;
 	}

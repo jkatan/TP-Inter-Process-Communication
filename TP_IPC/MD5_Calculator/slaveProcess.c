@@ -5,12 +5,14 @@
 #include <sys/wait.h>
 #include "slaveProcess.h"
 #include "fileDescriptors.h"
+#include "queuelib.h"
 
 char* calculateFileMD5Hash(char* fileName)
 {
 	int status = 0;
 
 	char* hash = malloc(sizeof(char)*32);
+	char* dump = malloc(sizeof(char)*1000);
 
 	int fileDescriptors[2] = {-1,-1};
 	pipe(fileDescriptors);
@@ -27,6 +29,7 @@ char* calculateFileMD5Hash(char* fileName)
 	wait(&status);
 
 	scanf("%s", hash);
+	while(scanf("%s", dump) > 0)
 	return hash;
 } 
 
