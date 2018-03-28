@@ -7,10 +7,6 @@
 #include "fileDescriptors.h"
 #include "queuelib.h"
 
-int main(void){
-	return 0;
-}
-
 char* calculateFileMD5Hash(char* fileName)
 {
 	int status = 0;
