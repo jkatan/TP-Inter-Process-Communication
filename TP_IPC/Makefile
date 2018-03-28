@@ -13,6 +13,6 @@ tests:
 
 clean:
 			cd MD5_Calculator; make clean
-			cd tests; make clean
+			cd Tests; make clean
 
 .PHONY: tests all allTests tests md5_calculator clean
