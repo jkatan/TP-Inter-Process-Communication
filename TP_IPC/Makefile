@@ -1,5 +1,7 @@
 all: md5_calculator tests
 
+fromzero: clean all; make all;
+
 allTests:
 			clean all; cd Tests; ./queueTest; ./slaveProcess ;
 

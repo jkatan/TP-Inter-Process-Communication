@@ -1,2 +1,2 @@
 GCC=gcc
-GCCFLAGS= -Wall -I./include -I../MD5_Calculator/include
+GCCFLAGS= -Wall -Iinclude -I../MD5_Calculator/include

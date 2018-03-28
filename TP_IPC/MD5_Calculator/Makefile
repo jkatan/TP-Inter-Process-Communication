@@ -3,7 +3,7 @@ include Makefile.inc
 SOURCES=$(wildcard *.c)
 OBJECTS=$(SOURCES:.c=.o)
 DEPS=$(wildcard include/*.h)
-SLAVEPROCESS=slaveProcess
+SLAVEPROCESS=slaveProcess.o
 
 all:$(SLAVEPROCESS)
 

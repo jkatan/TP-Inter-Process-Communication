@@ -1,21 +1,23 @@
 include Makefile.inc
 
 
-OBJECTS=$(SOURCES:.c=.o)
 DEPS=$(wildcard include/*.h)
-QUEUETEST=queueTest.o
-SOURCE_QUEUETEST=queueTest.c
-SLAVEPROCESSTEST=slaveProcessTest.o
-SOURCE_SLAVEPROCESSTEST=slaveProcessTest.c
+DEPS_IN_OTHER_FOLDER=$(wildcard ../MD5_Calculator/include/*.h)
 
-OTHERDEPS=$(wildcard ../MD5_Calculator/*.c)
+SLAVEPROCESSTEST=slaveProcessTest.o
+SOURCES_SLAVEPROCESSTEST=slaveProcessTest.c ../MD5_Calculator/queuelib.c ../MD5_Calculator/slaveProcessLib.c ../MD5_Calculator/hashedfile.c  testlib.c
+
+QUEUETEST=queueTest.o
+SOURCES_QUEUETEST=queueTest.c queuelib.c testlib.c
+
+
 
 all:$(SLAVEPROCESS) $(QUEUETEST)
 
-$(SLAVEPROCESSTEST): $(DEPS)
-	$(GCC)  -o $@ $(SOURCE_QUEUETEST) $(OTHERDEPS) $(GCCFLAGS)
-$(QUEUETEST): $(DEPS)
-	$(GCC)  -o $@ $(SOURCE_SLAVEPROCESSTEST) $(OTHERDEPS) $(GCCFLAGS)
+$(SLAVEPROCESSTEST): $(DEPS) $(DEPS_IN_OTHER_FOLDER)
+	$(GCC)  -o $@ $(SOURCES_QUEUETEST) $(GCCFLAGS)
+$(QUEUETEST): $(DEPS) $(DEPS_IN_OTHER_FOLDER)
+	$(GCC)  -o $@ $(SOURCES_SLAVEPROCESSTEST) $(GCCFLAGS)
 
 clean:
 	rm -rf *.o
