@@ -2,25 +2,7 @@
 #include <string.h>
 #include "queuelib.h"
 #include "testlib.h"
-
-void givenAQueue();
-void givenAnElement();
-void givenAQueueWithOneElement();
-void givenAQueueWithTwoElements();
-
-void whenElementIsDequed();
-void whenElementIsEnqueued();
-
-void thenNullIsReturned();
-void thenSizeIsEqualToOne();
-void thenSizeIsEqualToZero();
-void thenSizeIsEqualToOne();
-void thenTheFirstElementIsReturned();
-
-void emptyQueueTest();
-void enqueueElementTest();
-void dequeueElementTest();
-void dequeueOneOutOfTwoElementsTest();
+#include "queueTest.h"
 
 queueADT queueToTest;
 char* elementToDeque;

@@ -3,21 +3,9 @@
 #include "testlib.h"
 #include "queuelib.h"
 #include "hashedfile.h"
+#include "slaveProcessTest.h"
 
-void givenAFile();
-void givenMultipleFiles();
-void givenATaskQueue();
 
-void whenHashMD5IsCalculated();
-void whenMultipleFilesAreProcessed();
-
-void thenTheHashMD5IsReturned();
-void thenTheHashesAreReturned();
-
-void singleFileHashMD5Test();
-void multipleFilesHashMD5Test();
-void processTaskQueue();
-void receiveFile(char* file);
 
 queueADT taskQueue;
 char* filesToUse[] = {"testFile.txt", "testFile1.txt", "testFile2.txt"};
