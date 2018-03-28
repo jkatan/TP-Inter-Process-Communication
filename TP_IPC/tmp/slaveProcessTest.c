@@ -1,7 +1,8 @@
 #include <stdio.h>
-#include "slaveProcess.h"
+#include "slaveProcessLib.h"
 #include "testlib.h"
 #include "queuelib.h"
+#include "hashedfile.h"
 
 void givenAFile();
 void givenMultipleFiles();
@@ -22,7 +23,7 @@ queueADT taskQueue;
 char* filesToUse[] = {"testFile.txt", "testFile1.txt", "testFile2.txt"};
 char* testFilePath;
 
-char* MD5HashReturned;
+hashedFileADT MD5HashReturned;
 char* calculatedMD5Hashes[3];
 char* expectedMD5Hashes[] = {"2205e48de5f93c784733ffcca841d2b5",
 							 "d41d8cd98f00b204e9800998ecf8427e",
@@ -93,21 +94,21 @@ void whenMultipleFilesAreProcessed()
 void processTaskQueue()
 {
 	char* file;
-	char* hashMD5Calculated;
+	hashedFileADT hashMD5Calculated;
 	int i = 0;
 
 	while(!isEmpty(taskQueue))
 	{
 		file = dequeueElement(taskQueue);
 		hashMD5Calculated = calculateFileMD5Hash(file);
-		calculatedMD5Hashes[i] = hashMD5Calculated;
+		calculatedMD5Hashes[i] = hashMD5Calculated->hash;
 		i++;
 	}
 }
 
 void thenTheHashMD5IsReturned()
 {
-	if(compareWithExpectedMD5Hash(expectedMD5Hashes[0], MD5HashReturned) == 0)
+	if(compareWithExpectedMD5Hash(expectedMD5Hashes[0], MD5HashReturned->hash) == 0)
 	{
 		ok();
 	}
