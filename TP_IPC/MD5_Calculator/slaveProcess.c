@@ -7,6 +7,10 @@
 #include "fileDescriptors.h"
 #include "queuelib.h"
 
+int main(void){
+	return 0;
+}
+
 char* calculateFileMD5Hash(char* fileName)
 {
 	int status = 0;
@@ -23,15 +27,15 @@ char* calculateFileMD5Hash(char* fileName)
 		linkWriteEndOfPipeWithSTDOUT(fileDescriptors);
 		executeMD5HashCommand(fileName);
 	}
-	
+
 	linkReadEndOfPipeWithSTDIN(fileDescriptors);
 
 	wait(&status);
 
 	scanf("%s", hash);
-	while(scanf("%s", dump) > 0)
+	while(scanf("%s", dump) > 0);
 	return hash;
-} 
+}
 
 void linkReadEndOfPipeWithSTDIN(int fileDescriptors[])
 {

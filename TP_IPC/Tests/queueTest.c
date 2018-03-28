@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "queuelib.h"
-#include "testLib.h"
+#include "testlib.h"
 
 void givenAQueue();
 void givenAnElement();

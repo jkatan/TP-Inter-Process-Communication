@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "slaveProcess.h"
-#include "testLib.h"
+#include "testlib.h"
 #include "queuelib.h"
 
 void givenAFile();
@@ -19,13 +19,13 @@ void processTaskQueue();
 void receiveFile(char* file);
 
 queueADT taskQueue;
-char* filesToUse[] = {"TestFile.txt", "TestFile1.txt", "TestFile2.txt"};
+char* filesToUse[] = {"testFile.txt", "testFile1.txt", "testFile2.txt"};
 char* testFilePath;
 
 char* MD5HashReturned;
 char* calculatedMD5Hashes[3];
-char* expectedMD5Hashes[] = {"2205e48de5f93c784733ffcca841d2b5", 
-							 "d41d8cd98f00b204e9800998ecf8427e", 
+char* expectedMD5Hashes[] = {"2205e48de5f93c784733ffcca841d2b5",
+							 "d41d8cd98f00b204e9800998ecf8427e",
 							 "549e80f319af070f8ea8d0f149a149c2"};
 
 int main()
@@ -47,7 +47,7 @@ void singleFileHashMD5Test()
 }
 
 void multipleFilesHashMD5Test()
-{	
+{
 	givenATaskQueue();
 	givenMultipleFiles();
 

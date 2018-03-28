@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-#include "testLib.h"
+#include "testlib.h"
 
 int compareWithExpectedMD5Hash(char* expectedMD5Hash, char* MD5HashToCompare)
 {
