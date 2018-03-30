@@ -2,7 +2,7 @@
 #include "slaveProcessLib.h"
 #include "testlib.h"
 #include "queuelib.h"
-#include "hashedfile.h"
+#include "hashedFile.h"
 #include "slaveProcessTest.h"
 
 

@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
-#include "hashedfile.h"
+#include "hashedFile.h"
 
 hashedFileADT createHashedFile(char* filename)
 {

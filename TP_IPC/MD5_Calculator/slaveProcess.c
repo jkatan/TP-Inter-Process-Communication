@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "slaveProcessLib.h"
-#include "hashedfile.h"
+#include "hashedFile.h"
 
 int main()
 {
@@ -12,6 +12,6 @@ int main()
 	{
 		scanf("%s", filename);
 		file = calculateFileMD5Hash(filename);
-		printf("%s %s\n", file->hash, file->filename);
+		printf("%s %s", file->hash, file->filename);
 	}
 }

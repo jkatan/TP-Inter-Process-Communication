@@ -1,7 +1,7 @@
 #ifndef SLAVE_PROCESS_LIB_H
 #define SLAVE_PROCESS_LIB_H
 
-#include "hashedfile.h"
+#include "hashedFile.h"
 
 hashedFileADT calculateFileMD5Hash(char* fileName);
 void executeMD5HashCommand(char* fileName);
