@@ -1,2 +1,2 @@
 GCC=gcc
-GCCFLAGS= -Wall -Iinclude
+GCCFLAGS= -Wall -Iinclude -lm
