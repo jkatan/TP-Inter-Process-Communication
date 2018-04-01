@@ -64,7 +64,7 @@ int sendFiles(slaveADT slave, int nextFile, char ** files, int quantityOfFiles, 
 	{
 			send(slave,files[i]);
 	}
-	return i;
+	return i - nextFile;
 }
 
 
@@ -80,6 +80,7 @@ int receiveHashes(slaveADT slave, hashedFileADT* hashes, int* sharedMemoryAddres
 	{
 		i++;
 	}
+
 	return 0;
 }
 
@@ -87,7 +88,7 @@ int receiveHash(slaveADT slave, hashedFileADT* hashes, int nextHashedFile, int* 
 {
 		int i = 0, currentPosition = 0;
 		char* buffer = malloc(1000 * sizeof(char));
-		while(i < 1000 && read(slave->readFrom,(buffer+i), 1) != -1 && *(buffer+i) !='\0')
+		while(i < 1000 && read(slave->readFrom,(buffer+i), 1) != -1 && *(buffer+i) !='\n')
 		{
 			if(read(slave->readFrom,(buffer + i), 1) == -1){
 				free(buffer);
@@ -104,7 +105,8 @@ int receiveHash(slaveADT slave, hashedFileADT* hashes, int nextHashedFile, int* 
 				currentPosition++;
 			}
 			*position += currentPosition;
-			sharedMemoryAddress[*position] = '\0';
+			sharedMemoryAddress[*position] = '\n';
+			*position += 1;
 		}
 		free(buffer);
 		return 1;

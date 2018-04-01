@@ -14,7 +14,7 @@
 int main(int argc, char const* argv[])
 {
 	int i, quantityOfFilesSent, quantityOfHashesReceived;
-
+	int pid = getpid();
 	int* sharedMemoryAddress;
 	int position = 0;
 	int sharedMemoryId;
@@ -34,7 +34,11 @@ int main(int argc, char const* argv[])
 	/*Creating semaphore*/
 	union semun * arguments = createSemun();
 
-	key = ftok("/semaphore", SEMAPHORE_IDENTIFIER); //check
+	if((key = ftok("/semaphore", pid)) == -1)
+	{
+		perror("Couldn't create semaphore");
+		exit(1);
+	}
 
 	if((semaphoreId = semget(key, 1, IPC_CREAT | 0666)) == -1)
 	{
@@ -58,6 +62,10 @@ int main(int argc, char const* argv[])
 		perror("Couldn't map memory");
 		exit(1);
 	}
+	accessSharedMemory(semaphoreId);
+	sharedMemoryAddress[position]=1;
+	position++;
+	leaveSharedMemory(semaphoreId);
 
 	/*Processing files*/
 	while(nextFile < quantityOfFiles)
@@ -66,6 +74,7 @@ int main(int argc, char const* argv[])
 		{
 			accessSharedMemory(semaphoreId);
 			quantityOfHashesReceived = receiveHashes(slaves[i], hashes, sharedMemoryAddress, &position);
+			sharedMemoryAddress[0] = position;
 			leaveSharedMemory(semaphoreId);
 			slaves[i]->filesGivenToProcess -= quantityOfHashesReceived;
 
