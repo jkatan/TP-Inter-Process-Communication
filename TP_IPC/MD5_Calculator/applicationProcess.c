@@ -16,6 +16,7 @@ int main(int argc, char const* argv[])
 	int i, quantityOfFilesSent, quantityOfHashesReceived;
 
 	int* sharedMemoryAddress;
+	int position = 0;
 	int sharedMemoryId;
 	int semaphoreId;
 	key_t key;
@@ -64,7 +65,7 @@ int main(int argc, char const* argv[])
 		for(i = 0; i < quantityOfSlaves; i++)
 		{
 			accessSharedMemory(semaphoreId);
-			quantityOfHashesReceived = receiveHashes(slaves[i], hashes);
+			quantityOfHashesReceived = receiveHashes(slaves[i], hashes, sharedMemoryAddress, &position);
 			leaveSharedMemory(semaphoreId);
 			slaves[i]->filesGivenToProcess -= quantityOfHashesReceived;
 

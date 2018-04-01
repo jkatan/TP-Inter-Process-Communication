@@ -12,6 +12,6 @@ int main()
 	{
 		scanf("%s", filename);
 		file = calculateFileMD5Hash(filename);
-		printf("%s %s", file->hash, file->filename);
+		printf("%s:%s\n", file->hash, file->filename);
 	}
 }

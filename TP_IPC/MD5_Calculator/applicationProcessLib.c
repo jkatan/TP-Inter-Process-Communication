@@ -73,45 +73,39 @@ void send(slaveADT slave, char * file)
 	write(slave->writeTo, file, strlen(file)+1);
 }
 
-int receiveHashes(slaveADT slave, hashedFileADT * hashes)
+int receiveHashes(slaveADT slave, hashedFileADT* hashes, int* sharedMemoryAddress, int* position)
 {
 	int i = 0;
-	while(receiveHash(slave, hashes, i) != -1)
+	while(receiveHash(slave, hashes, i, sharedMemoryAddress, position) != -1)
 	{
 		i++;
 	}
 	return 0;
 }
 
-int receiveHash(slaveADT slave, hashedFileADT * hashes, int nextHashedFile)
+int receiveHash(slaveADT slave, hashedFileADT* hashes, int nextHashedFile, int* sharedMemoryAddress,  int* position)
 {
-		int i = 0, end = 0;
-		char* filename = malloc(100 * sizeof(char));
-		char* hash = malloc(33 * sizeof(char));
+		int i = 0, currentPosition = 0;
 		char* buffer = malloc(1000 * sizeof(char));
-		while(i < 1000 && read(slave->readFrom,(buffer+i), 1) != -1 && !end)
+		while(i < 1000 && read(slave->readFrom,(buffer+i), 1) != -1 && *(buffer+i) !='\0')
 		{
-			if(read(slave->readFrom,(buffer+i), 1) == -1){
+			if(read(slave->readFrom,(buffer + i), 1) == -1){
 				free(buffer);
-				free(hash);
-				free(filename);
 				return -1;
 			}
-			if(*(buffer+i) ==' ')//hash and filename separator
-			{
-				*(buffer+i) = '\0';
-				strncpy(hash, buffer, i+1);
-				i = 0;
-			}
-			else if(*(buffer+i) =='\0')// hash, filname combo end
-			{
-				strncpy(hash, buffer, i+1);
-				end = 1;
-			}
+
 			i++;
 		}
-		hashes[nextHashedFile] = createHashedFile(filename);
-		hashes[nextHashedFile]->hash=hash;
+		//falta chequeo de que *position no se pase del tamaño de la shared memory
+		if(*(buffer+i) =='\0')//last position of filename:hash
+		{
+			while(currentPosition < i){
+				sharedMemoryAddress[*position + currentPosition] = *(buffer + currentPosition);
+				currentPosition++;
+			}
+			*position += currentPosition;
+			sharedMemoryAddress[*position] = '\0';
+		}
 		free(buffer);
 		return 1;
 }
