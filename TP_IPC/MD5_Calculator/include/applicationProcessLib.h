@@ -6,6 +6,8 @@
 #define QTY_TO_SEND 3
 
 #include "hashedFile.h"
+#include "sharedMemory.h"
+#include "semaphore.h"
 
 typedef struct slaveCDT* slaveADT;
 
