@@ -98,7 +98,7 @@ int receiveHash(slaveADT slave, hashedFileADT* hashes, int nextHashedFile, int* 
 			i++;
 		}
 		//falta chequeo de que *position no se pase del tamaño de la shared memory
-		if(*(buffer+i) =='\0')//last position of filename:hash
+		if(*(buffer+i) =='\n')//last position of filename:hash
 		{
 			while(currentPosition < i){
 				sharedMemoryAddress[*position + currentPosition] = *(buffer + currentPosition);
