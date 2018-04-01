@@ -24,7 +24,7 @@ slaveADT createSlave(int writeToSlave, int readFromSlave);
 void terminateSlaves(slaveADT slaves[], int quantityOfSlaves);
 int sendFiles(slaveADT slave, int nextfile, char ** files, int quantityOfFiles, int quantityOfFilesToSend);
 void send(slaveADT slave, char * file);
-int receiveHashes(slaveADT slave, hashedFileADT * hashes, int nextHashedFile, int* sharedMemory, int* position);
+int receiveHashes(slaveADT slave, hashedFileADT * hashes, int* sharedMemory, int* position);
 int receiveHash(slaveADT slave, hashedFileADT * hashes, int nextHashedFile,  int* sharedMemory, int* position);
 
 
