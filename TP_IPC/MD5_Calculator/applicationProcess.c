@@ -82,9 +82,11 @@ int main(int argc, char const* argv[])
 		for(i = 0; i < quantityOfSlaves; i++)
 		{
 			accessSharedMemory(semaphoreId);
+			printf("Application Process in shared memory... \n");
 			quantityOfHashesReceived = receiveHashes(slaves[i], hashes, sharedMemoryAddress, &position);
 			sharedMemoryAddress[0] = position;
 			leaveSharedMemory(semaphoreId);
+			printf("Out of shared memory... \n");
 			slaves[i]->filesGivenToProcess -= quantityOfHashesReceived;
 
 			if(slaves[i]->filesGivenToProcess < MIN_QTY_FILES_TO_PROCESS)

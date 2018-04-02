@@ -14,9 +14,9 @@ void initializeKillSignalHandler()
 
 int main(int argc, char const *argv[])
 {
-
+	printf("Hello from slave:%d \n", getpid());
 	initializeKillSignalHandler();
-	printf("Slave create:%d \n", getpid());
+
 	char* filename = malloc(sizeof(char)*256);
 	hashedFileADT file;
 
