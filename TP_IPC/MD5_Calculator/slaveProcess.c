@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <signal.h>
+#include <string.h>
 #include "slaveProcessLib.h"
 #include "hashedfile.h"
 
@@ -14,8 +15,8 @@ int main(int argc, char const *argv[])
 	char* filename = malloc(sizeof(char)*256);
 	hashedFileADT file;
 
-	int readEndOfPipe = (int)argv[1][0];
-	int writeEndOfPipe = (int)argv[2][0];
+	int readEndOfPipe = atoi(argv[1]);
+	int writeEndOfPipe = atoi(argv[2]);
 
 	while(!done)
 	{
