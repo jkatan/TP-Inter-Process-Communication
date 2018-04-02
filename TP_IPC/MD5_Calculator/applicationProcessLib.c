@@ -3,7 +3,9 @@
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
-#include "hashedFile.h"
+#include <signal.h>
+#include <sys/types.h>
+#include "hashedfile.h"
 #include "applicationProcessLib.h"
 
 
@@ -27,23 +29,24 @@ void createSlaveProcesses(slaveADT * slaves, int quantityOfSlaves)
 			close(pipeToSlave[1]);
 			close(pipeToApplication[0]);
 			char* arguments[] = {"slaveProcess" ,
-														(char*)&pipeToSlave[0], //where slaveProcess must read
-															(char*)&pipeToApplication[1]}; //where slaveProcess must write
+								(char*)&pipeToSlave[0], //where slaveProcess must read
+								(char*)&pipeToApplication[1]}; //where slaveProcess must write
 			execvp(arguments[0], arguments);
 		}
 		close(pipeToSlave[0]);
 		close(pipeToApplication[1]);
-		slaves[i] = createSlave(pipeToApplication[0],pipeToSlave[1]);
+		slaves[i] = createSlave(pipeToApplication[0],pipeToSlave[1], pid);
 	}
 }
 
 
-slaveADT createSlave(int readFromSlave, int writeToSlave)
+slaveADT createSlave(int readFromSlave, int writeToSlave, int pid)
 {
 	slaveADT newSlave = (slaveADT) malloc(sizeof(slaveCDT));
 	newSlave->writeTo = writeToSlave;
 	newSlave->readFrom = readFromSlave;
 	newSlave->filesGivenToProcess = 0;
+	newSlave->slavePID = pid;
 	return newSlave;
 }
 
@@ -52,12 +55,16 @@ void terminateSlaves(slaveADT slaves[], int quantityOfSlaves)
 	int i;
 	for(i = 0; i < quantityOfSlaves; i++)
 	{
-		char terminationMessage[] = {EOF};
-		send(slaves[i], terminationMessage);
+		terminateSlave(slaves[i]);
 	}
 }
 
-int sendFiles(slaveADT slave, int nextFile, char ** files, int quantityOfFiles, int quantityOfFilesToSend)
+void terminateSlave(slaveADT slave)
+{
+	kill(slave->slavePID, SIGTERM);
+}
+
+int sendFiles(slaveADT slave, int nextFile, char** files, int quantityOfFiles, int quantityOfFilesToSend)
 {
 	int i;
 	for(i = nextFile; i < quantityOfFilesToSend && i < quantityOfFiles ; i++)
@@ -68,9 +75,13 @@ int sendFiles(slaveADT slave, int nextFile, char ** files, int quantityOfFiles, 
 }
 
 
-void send(slaveADT slave, char * file)
+void send(slaveADT slave, char* file)
 {
-	write(slave->writeTo, file, strlen(file)+1);
+	char* fileToSend = malloc((strlen(file)+1)*sizeof(char));
+	char finishReadingFile[] = {'\n'};
+	strcat(fileToSend, file);
+	strcat(fileToSend, finishReadingFile);
+	write(slave->writeTo, file, strlen(fileToSend));
 }
 
 int receiveHashes(slaveADT slave, hashedFileADT* hashes, int* sharedMemoryAddress, int* position)

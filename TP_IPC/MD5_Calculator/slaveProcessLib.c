@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <string.h>
 #include <sys/wait.h>
 #include "fileDescriptors.h"
 #include "slaveProcessLib.h"
@@ -46,4 +47,33 @@ void executeMD5HashCommand(char* fileName)
 {
 	char *arguments[] = {"md5sum", fileName, NULL};
 	execvp(arguments[0], arguments);
+}
+
+void sendHashedFileThroughPipe(int pipeFileDescriptor, hashedFileADT file)
+{
+	int hashedFileDataLength = strlen(file->hash) + strlen(file->filename) + 2;
+	char* dataToSend = malloc(hashedFileDataLength*sizeof(char));
+	char newLine[] = {'\n'};
+	
+	strcat(dataToSend, file->hash);
+	strcat(dataToSend, ":");
+	strcat(dataToSend, file->filename);
+	strcat(dataToSend, newLine);
+
+	write(pipeFileDescriptor, dataToSend, hashedFileDataLength);
+}
+
+void readFileFromPipe(int pipeFileDescriptor, char* fileNameBuffer)
+{
+	int i;
+	char currentChar = 0;
+
+	for(i = 0; currentChar != '\n' || i < 256; i++)
+	{
+		read(pipeFileDescriptor, &currentChar, 1);
+		if(currentChar != '\n')
+		{
+			fileNameBuffer[i] = currentChar;
+		}
+	}
 }
