@@ -31,11 +31,10 @@ void createSlaveProcesses(slaveADT * slaves, int quantityOfSlaves)
 			printf("Slave create:%d \n", getpid());
 			close(pipeToSlave[1]);
 			close(pipeToApplication[0]);
-			char* arguments[] = {"/MD5_Calculator/slaveProcess" ,
+			char* arguments[] = {"./MD5_Calculator/slaveProcess" ,
 								(char*)&pipeToSlave[0], //where slaveProcess must read
-								(char*)&pipeToApplication[1]}; //where slaveProcess must write
+								(char*)&pipeToApplication[1], NULL}; //where slaveProcess must write
 			execvp(arguments[0], arguments);
-			printf("\n\n WHY ARE WE HERE ? JUST TO SUFFER?!\n\n");
 		}
 
 
