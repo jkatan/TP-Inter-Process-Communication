@@ -4,9 +4,13 @@
 #include <signal.h>
 #include <string.h>
 #include "slaveProcessLib.h"
-#include "hashedfile.h"
+#include "hashedFile.h"
 
 volatile int done = 0;
+void initializeKillSignalHandler()
+{
+
+}
 
 int main(int argc, char const *argv[])
 {

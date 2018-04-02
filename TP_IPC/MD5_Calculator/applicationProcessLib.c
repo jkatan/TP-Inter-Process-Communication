@@ -5,7 +5,7 @@
 #include <string.h>
 #include <signal.h>
 #include <sys/types.h>
-#include "hashedfile.h"
+#include "hashedFile.h"
 #include "applicationProcessLib.h"
 
 

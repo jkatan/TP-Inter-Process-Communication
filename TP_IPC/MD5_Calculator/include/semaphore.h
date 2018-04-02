@@ -3,6 +3,5 @@
 
 #include <sys/sem.h>
 #define  SEMAPHORE_IDENTIFIER 131313
-union semun * createSemun();
 
 #endif

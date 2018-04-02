@@ -11,6 +11,7 @@
 #include <sys/shm.h>
 #include "applicationProcessLib.h"
 
+
 int main(int argc, char const* argv[])
 {
 	int i, quantityOfFilesSent, quantityOfHashesReceived;
@@ -22,21 +23,28 @@ int main(int argc, char const* argv[])
 	key_t key;
 
 	char ** files = (char **)argv;
-	int quantityOfFiles = argc;
+	int quantityOfFiles = argc - 1;
 	int nextFile = 0;
 	hashedFileADT * hashes = NULL;
-
+	printf("Program starting... \n");
 	int quantityOfSlaves = calculateQuantityOfSlaveProcessesToCreate(quantityOfFiles);
 
 	slaveADT slaves[quantityOfSlaves];
 	createSlaveProcesses(slaves, quantityOfSlaves);
 
 	/*Creating semaphore*/
-	union semun * arguments = createSemun();
-
-	if((key = ftok("/semaphore", pid)) == -1)
+	union semun
 	{
-		perror("Couldn't create semaphore");
+               int val;
+               struct semid_ds *buf;
+               ushort *array;
+  } arguments;
+	arguments.val = 1;
+
+
+	if((key = ftok("./semaphore", pid)) == -1)
+	{
+		perror("Couldn't create semaphore:");
 		exit(1);
 	}
 
@@ -47,12 +55,12 @@ int main(int argc, char const* argv[])
 	}
 	if(semctl(semaphoreId, 0, SETVAL, arguments) == -1)
 	{
-		perror("Couldn't init semaphore");
+		perror("Couldn't init semaphore:");
 		exit(1);
 	}
 
 	/*Get shared Memory*/
-	if((sharedMemoryId = shmget(key, SHARED_MEMORY_SIZE, 0644 | IPC_CREAT)) == -1)
+	if((sharedMemoryId = shmget(key, SHARED_MEMORY_SIZE, 0666 | IPC_CREAT)) == -1)
 	{
     perror("Couldn't create shared memory");
     exit(1);
@@ -66,10 +74,11 @@ int main(int argc, char const* argv[])
 	sharedMemoryAddress[position]=1;
 	position++;
 	leaveSharedMemory(semaphoreId);
-
+	printf("Program processing... \nQuantity of files: %d \n", quantityOfFiles);
 	/*Processing files*/
 	while(nextFile < quantityOfFiles)
 	{
+
 		for(i = 0; i < quantityOfSlaves; i++)
 		{
 			accessSharedMemory(semaphoreId);
@@ -89,5 +98,6 @@ int main(int argc, char const* argv[])
 
 	/*End Process*/
 	terminateSlaves(slaves, quantityOfSlaves);
+	printf("Program ending... \n");
 	return 0;
 }

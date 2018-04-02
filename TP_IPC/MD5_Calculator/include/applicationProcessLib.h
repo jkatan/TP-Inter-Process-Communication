@@ -5,7 +5,7 @@
 #define MIN_QTY_FILES_TO_PROCESS 4
 #define QTY_TO_SEND 3
 
-#include "hashedfile.h"
+#include "hashedFile.h"
 #include "sharedMemory.h"
 #include "semaphore.h"
 
