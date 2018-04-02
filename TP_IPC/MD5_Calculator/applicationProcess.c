@@ -42,7 +42,7 @@ int main(int argc, char const* argv[])
 	arguments.val = 1;
 
 
-	if((key = ftok("./semaphore", pid)) == -1)
+	if((key = ftok(".", pid)) == -1)
 	{
 		perror("Couldn't create semaphore:");
 		exit(1);
@@ -74,11 +74,11 @@ int main(int argc, char const* argv[])
 	sharedMemoryAddress[position]=1;
 	position++;
 	leaveSharedMemory(semaphoreId);
-	printf("Program processing... \nQuantity of files: %d \n", quantityOfFiles);
+	printf("Program processing... \nTotal quantity of files: %d \n", quantityOfFiles);
 	/*Processing files*/
 	while(nextFile < quantityOfFiles)
 	{
-
+		printf("Quantity of files remaining: %d \n", quantityOfFiles-nextFile);
 		for(i = 0; i < quantityOfSlaves; i++)
 		{
 			accessSharedMemory(semaphoreId);

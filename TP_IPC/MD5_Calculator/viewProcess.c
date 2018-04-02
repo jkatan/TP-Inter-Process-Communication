@@ -21,7 +21,7 @@ int main (int argc, char *argv[])
   key_t key;
   int appProcessPid = atoi(argv[1]);
 
-  key = ftok("./semaphore", appProcessPid);
+  key = ftok(".", appProcessPid);
 
   if((semaphoreId = semget(key, 1, IPC_CREAT | 0666)) == -1)
   {

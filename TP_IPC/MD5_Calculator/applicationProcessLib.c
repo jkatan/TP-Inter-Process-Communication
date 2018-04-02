@@ -16,27 +16,34 @@ int calculateQuantityOfSlaveProcessesToCreate(int quantityOfFiles)
 
 void createSlaveProcesses(slaveADT * slaves, int quantityOfSlaves)
 {
+	printf("Program creating slaves... \n");
 	int pipeToSlave[2] = {-1,-1};
 	int pipeToApplication[2] = {-1,-1};
-	int i, pid;
+	int i, pid = getpid();
 
 	for(i = 0; i < quantityOfSlaves; i++)
 	{
 		pipe(pipeToSlave);
 		pipe(pipeToApplication);
 		pid = fork();
-		if(pid == 0){
+		if(pid == 0)
+		{
+			printf("Slave create:%d \n", getpid());
 			close(pipeToSlave[1]);
 			close(pipeToApplication[0]);
-			char* arguments[] = {"slaveProcess" ,
+			char* arguments[] = {"/MD5_Calculator/slaveProcess" ,
 								(char*)&pipeToSlave[0], //where slaveProcess must read
 								(char*)&pipeToApplication[1]}; //where slaveProcess must write
 			execvp(arguments[0], arguments);
+			printf("\n\n WHY ARE WE HERE ? JUST TO SUFFER?!\n\n");
 		}
+
+
 		close(pipeToSlave[0]);
 		close(pipeToApplication[1]);
 		slaves[i] = createSlave(pipeToApplication[0],pipeToSlave[1], pid);
 	}
+	return;
 }
 
 

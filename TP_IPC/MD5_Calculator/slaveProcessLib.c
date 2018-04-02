@@ -15,7 +15,7 @@ hashedFileADT calculateFileMD5Hash(char* fileName)
 	pipe(fileDescriptors);
 
 	int pid = fork();
-	if(pid==0)
+	if(pid == 0)
 	{
 		linkWriteEndOfPipeWithSTDOUT(fileDescriptors);
 		executeMD5HashCommand(fileName);
@@ -54,7 +54,7 @@ void sendHashedFileThroughPipe(int pipeFileDescriptor, hashedFileADT file)
 	int hashedFileDataLength = strlen(file->hash) + strlen(file->filename) + 2;
 	char* dataToSend = malloc(hashedFileDataLength*sizeof(char));
 	char newLine[] = {'\n'};
-	
+
 	strcat(dataToSend, file->hash);
 	strcat(dataToSend, ":");
 	strcat(dataToSend, file->filename);
