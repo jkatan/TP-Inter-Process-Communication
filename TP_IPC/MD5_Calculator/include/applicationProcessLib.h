@@ -29,4 +29,5 @@ int receiveHashes(slaveADT slave, hashedFileADT * hashes, int* sharedMemory, int
 int receiveHash(slaveADT slave, hashedFileADT * hashes, int nextHashedFile,  int* sharedMemory, int* position);
 void terminateSlave(slaveADT slave);
 
+
 #endif

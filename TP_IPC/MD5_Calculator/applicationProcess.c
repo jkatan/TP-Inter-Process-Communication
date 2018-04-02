@@ -42,7 +42,7 @@ int main(int argc, char const* argv[])
 	arguments.val = 1;
 
 
-	if((key = ftok(".", pid)) == -1)
+	if((key = ftok("./memory", pid)) == -1)
 	{
 		perror("Couldn't create semaphore:");
 		exit(1);
@@ -83,7 +83,14 @@ int main(int argc, char const* argv[])
 		{
 			accessSharedMemory(semaphoreId);
 			printf("Application Process in shared memory... \n");
-			quantityOfHashesReceived = receiveHashes(slaves[i], hashes, sharedMemoryAddress, &position);
+
+			int i = 0;
+			printf("heeeee yaaa!");
+			while(receiveHash(slaves[i], hashes, i, sharedMemoryAddress, &position) != -1)
+			{
+				i++;
+			}
+			quantityOfHashesReceived=i;
 			sharedMemoryAddress[0] = position;
 			leaveSharedMemory(semaphoreId);
 			printf("Out of shared memory... \n");
@@ -101,5 +108,6 @@ int main(int argc, char const* argv[])
 	/*End Process*/
 	terminateSlaves(slaves, quantityOfSlaves);
 	printf("Program ending... \n");
+	shmdt(sharedMemoryAddress);
 	return 0;
 }

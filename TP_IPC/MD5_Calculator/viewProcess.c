@@ -21,7 +21,7 @@ int main (int argc, char *argv[])
   key_t key;
   int appProcessPid = atoi(argv[1]);
 
-  key = ftok(".", appProcessPid);
+  key = ftok("./memory", appProcessPid);
 
   if((semaphoreId = semget(key, 1, IPC_CREAT | 0666)) == -1)
   {
@@ -37,6 +37,7 @@ int main (int argc, char *argv[])
   }
   if((int)(sharedMemoryAddress = shmat(sharedMemoryId, (void *)0, 0)) ==-1)
   {
+
     perror("Couldn't map memory");
     exit(1);
   }
@@ -48,4 +49,5 @@ int main (int argc, char *argv[])
     fwrite(sharedMemoryAddress+i, 1, 1, stdout);
   }
   leaveSharedMemory(semaphoreId);
+  shmdt(sharedMemoryAddress);
 }
