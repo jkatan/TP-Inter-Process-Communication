@@ -79,11 +79,11 @@ int sendFiles(slaveADT* slaves, int quantityOfSlaves, char** files, int quantity
 	{
 		if(slaves[i]->filesGivenToProcess < MIN_QTY_FILES_TO_PROCESS)
 		{
-			for(j = nextFile; j < nextFile + MIN_QTY_FILES_TO_PROCESS; j++)
+			for(j = nextFile; j < nextFile + MIN_QTY_FILES_TO_PROCESS && j < quantityOfFiles; j++)
 			{
 				send(slaves[i], files[j]);
 			}
-			slaves[i]->filesGivenToProcess += MIN_QTY_FILES_TO_PROCESS;
+			slaves[i]->filesGivenToProcess += j - nextFile;
 			nextFile = j;
 		}
 	}
