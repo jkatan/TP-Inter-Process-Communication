@@ -28,9 +28,11 @@ int main(int argc, char const* argv[])
 
 	char ** files = (char **)(argv+1);
 	int quantityOfFiles = argc - 1;
+	int quantityOfHashesReceived = 0;
 	int nextFile = 0;
 	printf("Program starting... \n");
 	int quantityOfSlaves = calculateQuantityOfSlaveProcessesToCreate(quantityOfFiles);
+
 
 	slaveADT* slaves = malloc(quantityOfSlaves * sizeof(slaveADT)); // preguntar
 	createSlaveProcesses(slaves, quantityOfSlaves);
@@ -81,21 +83,21 @@ int main(int argc, char const* argv[])
 	/*set select for FileDescriptrs*/
 	printf("Program processing... \nTotal quantity of files: %d \n", quantityOfFiles);
 	/*Processing files*/
-	while(nextFile < quantityOfFiles)
+	while(quantityOfHashesReceived < quantityOfFiles)
 	{
-			nextFile = sendFiles(slaves, quantityOfSlaves, files, quantityOfFiles, nextFile);
 
+			if(nextFile < quantityOfFiles)
+				nextFile = sendFiles(slaves, quantityOfSlaves, files, quantityOfFiles, nextFile);
 			accessSharedMemory(semaphoreId);
-			position = receiveHashes(slaves, quantityOfSlaves, sharedMemoryAddress, position, maxReadFileDescriptor);
-			sharedMemoryAddress[0] = position;
+			quantityOfHashesReceived += receiveHashes(slaves, quantityOfSlaves, sharedMemoryAddress, maxReadFileDescriptor);
 			leaveSharedMemory(semaphoreId);
 	}
+	printf("Quantity of hashes received:%d \n", quantityOfHashesReceived);
 
 	/*End Process*/
-
+	printf("Program ending... \n");
 	terminateSlaves(slaves, quantityOfSlaves); //chequear si está liberando bien la memoria.
 	free(slaves);
-	printf("Program ending... \n");
 
 	semctl(semaphoreId, 0, IPC_RMID, arguments);
 	shmdt(sharedMemoryAddress);

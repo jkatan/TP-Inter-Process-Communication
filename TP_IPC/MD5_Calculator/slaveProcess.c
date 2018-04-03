@@ -22,11 +22,13 @@ int main(int argc, char const *argv[])
 
 	int readEndOfPipe = atoi(argv[1]);
 	int writeEndOfPipe = atoi(argv[2]);
-
 	while(!done)
 	{
 		readFileFromPipe(readEndOfPipe, filenameBuffer);
+
+
 		file = calculateFileMD5Hash(filenameBuffer);
+		printf("%s:%s  (CALCULTED FROM SLAVE: %d)\n ",file->hash, file->filename, getpid());
 
 		sendHashedFileThroughPipe(writeEndOfPipe, file);
 		//falta liberar la estructura file;

@@ -79,7 +79,7 @@ void terminateSlave(slaveADT slave)
 
 int sendFiles(slaveADT* slaves, int quantityOfSlaves, char** files, int quantityOfFiles, int nextFile)
 {
-	
+
 	int i, j;
 	for(i = 0; i < quantityOfSlaves; i++)
 	{
@@ -111,9 +111,9 @@ void send(slaveADT slave, char* file)
 	free(fileToSend);
 }
 
-int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddress, int position, int maxReadFileDescriptor)
+int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddress, int maxReadFileDescriptor)
 {
-	int i;
+	int i, quantityOfHashesReceived = 0;
 	fd_set fileDescriptorSetToReadFromSlaves;
 	int ts;
 
@@ -132,21 +132,21 @@ int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddr
 		perror("Failed to select() file descriptors from slave");
 		exit(1);
 	}
-	printf("\n------DEBUGGING----\n");
 
 	for(i = 0; i < quantityOfSlaves && ts != 0; i++)
 	{
 		if(FD_ISSET(slaves[i]->readFrom, &fileDescriptorSetToReadFromSlaves))
 		{
-			position = receiveHash(slaves[i], sharedMemoryAddress, position);
+			quantityOfHashesReceived += receiveHash(slaves[i], sharedMemoryAddress);
 		}
 	}
-	return position;
+	return quantityOfHashesReceived;
 }
 
-int receiveHash(slaveADT slave, int* sharedMemoryAddress,  int position)
+int receiveHash(slaveADT slave, int* sharedMemoryAddress)
 {
 		int end = 0;
+		int position = sharedMemoryAddress[0];
 		while(!end && read(slave->readFrom,(sharedMemoryAddress+position), 1) >=0)
 		{
 			if(*(sharedMemoryAddress+position) == '\n')
@@ -155,7 +155,8 @@ int receiveHash(slaveADT slave, int* sharedMemoryAddress,  int position)
 			}
 			position++;
 		}
-		return position;
+		sharedMemoryAddress[0] = position;
+		return 1;
 }
 
 int getMaxReadFileDescriptor(slaveADT* slaves, int quantityOfSlaves)

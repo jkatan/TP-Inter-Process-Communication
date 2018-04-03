@@ -25,8 +25,8 @@ slaveADT createSlave(int writeToSlave, int readFromSlave, int pid);
 void terminateSlaves(slaveADT slaves[], int quantityOfSlaves);
 int sendFiles(slaveADT* slaves, int quantityOfSlaves, char** files, int quantityOfFiles, int nextFile);
 void send(slaveADT slave, char* file);
-int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddress, int position, int maxReadFileDescriptor);
-int receiveHash(slaveADT slave,  int* sharedMemory, int position);
+int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddress, int maxReadFileDescriptor);
+int receiveHash(slaveADT slave,  int* sharedMemory);
 void terminateSlave(slaveADT slave);
 int getMaxReadFileDescriptor(slaveADT* slaves, int quantityOfSlaves);
 
