@@ -10,6 +10,5 @@ void linkReadEndOfPipeWithSTDIN(int fileDescriptors[]);
 void readFileFromPipe(int pipeFileDescriptor, char* fileNameBuffer);
 void sendHashedFileThroughPipe(int pipeFileDescriptor, hashedFileADT file);
 void terminate(int signum);
-void initializeKillSignalHandler();
 
 #endif

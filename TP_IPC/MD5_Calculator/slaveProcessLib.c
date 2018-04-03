@@ -77,3 +77,4 @@ void readFileFromPipe(int pipeFileDescriptor, char* fileNameBuffer)
 		}
 	}
 }
+

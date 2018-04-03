@@ -7,15 +7,15 @@
 #include "hashedFile.h"
 
 volatile int done = 0;
-void initializeKillSignalHandler()
-{
-
-}
 
 int main(int argc, char const *argv[])
 {
 	printf("Hello from slave:%d \n", getpid());
-	initializeKillSignalHandler();
+	
+	struct sigaction action;
+    memset(&action, 0, sizeof(struct sigaction));
+    action.sa_handler = terminate;
+    sigaction(SIGTERM, &action, NULL);
 
 	char* filename = malloc(sizeof(char)*256);
 	hashedFileADT file;
