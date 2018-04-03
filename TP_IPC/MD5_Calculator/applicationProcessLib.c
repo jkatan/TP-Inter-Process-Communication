@@ -91,8 +91,10 @@ void send(slaveADT slave, char* file)
 
 int receiveHashes(slaveADT slave, hashedFileADT* hashes, int* sharedMemoryAddress, int* position)
 {
+
 	int i = 0;
-	printf("heeeee yaaa!");
+	
+
 	while(receiveHash(slave, hashes, i, sharedMemoryAddress, position) != -1)
 	{
 		i++;
