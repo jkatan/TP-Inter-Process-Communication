@@ -66,7 +66,7 @@ void readFileFromPipe(int pipeFileDescriptor, char* fileNameBuffer)
 	int i;
 	char currentChar = 0;
 
-	for(i = 0; currentChar != '\n'; i++)
+	for(i = 0; currentChar != '\n' && i < 256; i++)
 	{
 		read(pipeFileDescriptor, &currentChar, 1);
 		if(currentChar != '\n')
