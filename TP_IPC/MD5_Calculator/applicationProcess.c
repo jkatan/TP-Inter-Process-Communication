@@ -83,14 +83,7 @@ int main(int argc, char const* argv[])
 		{
 			accessSharedMemory(semaphoreId);
 			printf("Application Process in shared memory... \n");
-
-			int i = 0;
-			printf("heeeee yaaa!");
-			while(receiveHash(slaves[i], hashes, i, sharedMemoryAddress, &position) != -1)
-			{
-				i++;
-			}
-			quantityOfHashesReceived=i;
+			quantityOfHashesReceived =  receiveHashes(slaves[i], hashes, sharedMemoryAddress, &position));
 			sharedMemoryAddress[0] = position;
 			leaveSharedMemory(semaphoreId);
 			printf("Out of shared memory... \n");
