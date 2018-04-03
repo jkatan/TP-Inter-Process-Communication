@@ -123,7 +123,7 @@ int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddr
 
 		FD_SET(slaves[i]->readFrom, &fileDescriptorSetToReadFromSlaves);
 	}
-	sleep(5);
+	
 
 	ts = select(maxReadFileDescriptor, &fileDescriptorSetToReadFromSlaves, NULL, NULL, NULL);
 
