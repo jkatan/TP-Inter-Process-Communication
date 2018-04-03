@@ -79,7 +79,7 @@ void terminateSlave(slaveADT slave)
 
 int sendFiles(slaveADT* slaves, int quantityOfSlaves, char** files, int quantityOfFiles, int nextFile)
 {
-	printf("Quantity of files remaining: ");
+	
 	int i, j;
 	for(i = 0; i < quantityOfSlaves; i++)
 	{
@@ -123,7 +123,7 @@ int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddr
 
 		FD_SET(slaves[i]->readFrom, &fileDescriptorSetToReadFromSlaves);
 	}
-	
+
 
 	ts = select(maxReadFileDescriptor, &fileDescriptorSetToReadFromSlaves, NULL, NULL, NULL);
 

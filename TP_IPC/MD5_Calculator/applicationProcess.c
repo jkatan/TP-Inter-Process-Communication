@@ -93,7 +93,7 @@ int main(int argc, char const* argv[])
 
 	/*End Process*/
 
-	terminateSlaves(slaves, quantityOfSlaves);
+	terminateSlaves(slaves, quantityOfSlaves); //chequear si está liberando bien la memoria.
 	free(slaves);
 	printf("Program ending... \n");
 

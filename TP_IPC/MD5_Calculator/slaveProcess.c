@@ -27,11 +27,11 @@ int main(int argc, char const *argv[])
 	{
 		readFileFromPipe(readEndOfPipe, filenameBuffer);
 		file = calculateFileMD5Hash(filenameBuffer);
-		printf("%s %s \n",file->hash, file->filename);
-		free(filenameBuffer);
+
 		sendHashedFileThroughPipe(writeEndOfPipe, file);
 		//falta liberar la estructura file;
 	}
+	free(filenameBuffer);
 }
 
 void terminate(int signum)
