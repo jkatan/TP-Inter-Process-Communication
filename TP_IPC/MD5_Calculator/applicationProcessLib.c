@@ -31,9 +31,17 @@ void createSlaveProcesses(slaveADT * slaves, int quantityOfSlaves)
 		{
 			close(pipeToSlave[1]);
 			close(pipeToApplication[0]);
+			printf("arg[1] to slave: %d\n", pipeToSlave[0]);
+			printf("arg[2] to slave: %d\n", pipeToApplication[1]);
+
+			char bufferArg1[3];
+			char bufferArg2[3];
+			sprintf(bufferArg1, "%d", pipeToSlave[0]);
+			sprintf(bufferArg2, "%d", pipeToApplication[1]);
+
 			char* arguments[] = {"./MD5_Calculator/slaveProcess" ,
-								(char*)&pipeToSlave[0], //where slaveProcess must read
-								(char*)&pipeToApplication[1], NULL}; //where slaveProcess must write
+								bufferArg1, //where slaveProcess must read
+								bufferArg2, NULL}; //where slaveProcess must write
 			execvp(arguments[0], arguments);
 		}
 
