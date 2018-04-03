@@ -28,7 +28,7 @@ int main(int argc, char const *argv[])
 
 
 		file = calculateFileMD5Hash(filenameBuffer);
-		printf("%s:%s  (CALCULTED FROM SLAVE: %d)\n ",file->hash, file->filename, getpid());
+		printf("%s:%s  (CALCULTED FROM SLAVE:%d)\n",file->hash, file->filename, getpid());
 
 		sendHashedFileThroughPipe(writeEndOfPipe, file);
 		//falta liberar la estructura file;

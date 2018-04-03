@@ -101,7 +101,7 @@ void send(slaveADT slave, char* file)
 {
 	int i;
 	int fileLength = strlen(file);
-	char* fileToSend = malloc((fileLength + 1) * sizeof(char));
+	char* fileToSend = calloc((fileLength + 1) , sizeof(char));
 	for(i = 0; i < strlen(file); i++)
 	{
 		fileToSend[i] = file[i];

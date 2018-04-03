@@ -60,7 +60,7 @@ void sendHashedFileThroughPipe(int pipeFileDescriptor, hashedFileADT file)
 	strncpy(dataToSend + strlen(file->filename) + 1, file->hash, strlen(file->hash));
 	dataToSend[hashedFileDataLength-1] = '\n';
 
-	printf("%s (SENDING DATA FROM SLAVE: %d)\n ",dataToSend, getpid());
+	printf("%s(SENDING DATA FROM SLAVE: %d)\n",dataToSend, getpid());
 
 	write(pipeFileDescriptor, dataToSend, hashedFileDataLength);
 
