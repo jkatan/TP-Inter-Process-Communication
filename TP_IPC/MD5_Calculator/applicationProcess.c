@@ -101,6 +101,9 @@ int main(int argc, char const* argv[])
 	/*End Process*/
 	terminateSlaves(slaves, quantityOfSlaves);
 	printf("Program ending... \n");
+
+	semctl(semaphoreId, 0, IPC_RMID, arguments);
 	shmdt(sharedMemoryAddress);
+
 	return 0;
 }
