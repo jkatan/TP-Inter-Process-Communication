@@ -32,6 +32,7 @@ int main(int argc, char const* argv[])
 	int nextFile = 0;
 	printf("Program starting... \n");
 	int quantityOfSlaves = calculateQuantityOfSlaveProcessesToCreate(quantityOfFiles);
+	printf("%d slaves created...\n", quantityOfSlaves);
 
 
 	slaveADT* slaves = malloc(quantityOfSlaves * sizeof(slaveADT)); // preguntar

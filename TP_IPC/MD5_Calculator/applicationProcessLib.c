@@ -102,6 +102,7 @@ void send(slaveADT slave, char* file)
 	int i;
 	int fileLength = strlen(file);
 	char* fileToSend = calloc((fileLength + 1) , sizeof(char));
+	printf("-----MANDO DESDE APPLICATION %s, %d A SLAVE %d\n" , file, (int)strlen(file), slave->slavePID);
 	for(i = 0; i < strlen(file); i++)
 	{
 		fileToSend[i] = file[i];
@@ -138,6 +139,7 @@ int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddr
 		if(FD_ISSET(slaves[i]->readFrom, &fileDescriptorSetToReadFromSlaves))
 		{
 			quantityOfHashesReceived += receiveHash(slaves[i], sharedMemoryAddress);
+			slaves[i]->filesGivenToProcess--;
 		}
 	}
 	return quantityOfHashesReceived;
