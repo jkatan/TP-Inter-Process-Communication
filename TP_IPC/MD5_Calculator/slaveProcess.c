@@ -23,9 +23,6 @@ int main(int argc, char const *argv[])
 	int readEndOfPipe = atoi(argv[1]);
 	int writeEndOfPipe = atoi(argv[2]);
 
-	printf("arg[1] received in slave: %d\n", readEndOfPipe);
-	printf("arg[2] received in slave: %d\n", writeEndOfPipe);
-
 	while(!done)
 	{
 		readFileFromPipe(readEndOfPipe, filenameBuffer);

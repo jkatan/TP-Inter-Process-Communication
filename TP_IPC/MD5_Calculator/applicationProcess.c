@@ -26,7 +26,7 @@ int main(int argc, char const* argv[])
 
 
 
-	char ** files = (char **)argv;
+	char ** files = (char **)(argv+1);
 	int quantityOfFiles = argc - 1;
 	int nextFile = 0;
 	printf("Program starting... \n");

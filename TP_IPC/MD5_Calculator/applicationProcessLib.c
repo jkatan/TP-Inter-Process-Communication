@@ -31,8 +31,6 @@ void createSlaveProcesses(slaveADT * slaves, int quantityOfSlaves)
 		{
 			close(pipeToSlave[1]);
 			close(pipeToApplication[0]);
-			printf("arg[1] to slave: %d\n", pipeToSlave[0]);
-			printf("arg[2] to slave: %d\n", pipeToApplication[1]);
 
 			char bufferArg1[3];
 			char bufferArg2[3];
