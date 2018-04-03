@@ -104,6 +104,7 @@ int main(int argc, char const* argv[])
 
 	semctl(semaphoreId, 0, IPC_RMID, arguments);
 	shmdt(sharedMemoryAddress);
+	shmctl(sharedMemoryId, IPC_RMID, NULL); 
 
 	return 0;
 }
