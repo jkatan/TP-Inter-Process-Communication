@@ -109,17 +109,26 @@ int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddr
 {
 	int i;
 	fd_set fileDescriptorSetToReadFromSlaves;
+	int ts;
+
 	FD_ZERO(&fileDescriptorSetToReadFromSlaves);
 	for(i = 0; i <  quantityOfSlaves; i++)
 	{
+
 		FD_SET(slaves[i]->readFrom, &fileDescriptorSetToReadFromSlaves);
 	}
-	if(select(maxReadFileDescriptor, &fileDescriptorSetToReadFromSlaves, NULL, NULL, NULL) == -1)
+	sleep(5);
+
+	ts = select(maxReadFileDescriptor, &fileDescriptorSetToReadFromSlaves, NULL, NULL, NULL);
+
+	if(ts == -1)
 	{
 		perror("Failed to select() file descriptors from slave");
 		exit(1);
 	}
-	for(i = 0; i < quantityOfSlaves; i++)
+	printf("\n------DEBUGGING----\n");
+
+	for(i = 0; i < quantityOfSlaves && ts != 0; i++)
 	{
 		if(FD_ISSET(slaves[i]->readFrom, &fileDescriptorSetToReadFromSlaves))
 		{

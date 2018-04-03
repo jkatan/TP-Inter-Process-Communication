@@ -11,13 +11,13 @@ volatile int done = 0;
 int main(int argc, char const *argv[])
 {
 	printf("Hello from slave:%d \n", getpid());
-	
-	struct sigaction action;
-    memset(&action, 0, sizeof(struct sigaction));
-    action.sa_handler = terminate;
-    sigaction(SIGTERM, &action, NULL);
 
-	char* filename = malloc(sizeof(char)*256);
+	struct sigaction action;
+  memset(&action, 0, sizeof(struct sigaction));
+  action.sa_handler = terminate;
+  sigaction(SIGTERM, &action, NULL);
+
+	char* filenameBuffer = malloc(sizeof(char)*256);
 	hashedFileADT file;
 
 	int readEndOfPipe = atoi(argv[1]);
@@ -25,9 +25,11 @@ int main(int argc, char const *argv[])
 
 	while(!done)
 	{
-		readFileFromPipe(readEndOfPipe, filename);
-		file = calculateFileMD5Hash(filename);
+		readFileFromPipe(readEndOfPipe, filenameBuffer);
+		file = calculateFileMD5Hash(filenameBuffer);
+		free(filenameBuffer);
 		sendHashedFileThroughPipe(writeEndOfPipe, file);
+		//falta liberar la estructura file;
 	}
 }
 

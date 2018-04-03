@@ -5,7 +5,7 @@
 hashedFileADT createHashedFile(char* filename)
 {
 	hashedFileADT newHashedFile = (hashedFileADT) malloc(sizeof(hashedFileCDT));
-	newHashedFile->filename = malloc(strlen(filename)*sizeof(char));
-	newHashedFile->hash = malloc(sizeof(char)*HASH_LENGTH);
+	newHashedFile->filename = calloc( 1, (strlen(filename)+ 1) * sizeof(char));
+	newHashedFile->hash = calloc(1, sizeof(char) * (HASH_LENGTH + 1));
 	return newHashedFile;
 }

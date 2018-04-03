@@ -51,16 +51,14 @@ void executeMD5HashCommand(char* fileName)
 
 void sendHashedFileThroughPipe(int pipeFileDescriptor, hashedFileADT file)
 {
-	int hashedFileDataLength = strlen(file->hash) + strlen(file->filename) + 2;
-	char* dataToSend = malloc(hashedFileDataLength*sizeof(char));
-	char newLine[] = {'\n'};
-
-	strcat(dataToSend, file->hash);
-	strcat(dataToSend, ":");
-	strcat(dataToSend, file->filename);
-	strcat(dataToSend, newLine);
-
+	int hashedFileDataLength =  strlen(file->hash) + strlen(file->filename) + 2;
+	char* dataToSend = malloc(hashedFileDataLength * sizeof(char));
+	strncpy(dataToSend, file->filename, strlen(file->filename));
+	dataToSend[strlen(file->filename)] = ':';
+	strncpy(dataToSend, file->hash, strlen(file->hash));
+	dataToSend[strlen(file->filename)] = '\n';
 	write(pipeFileDescriptor, dataToSend, hashedFileDataLength);
+	free(dataToSend);
 }
 
 void readFileFromPipe(int pipeFileDescriptor, char* fileNameBuffer)
@@ -71,10 +69,7 @@ void readFileFromPipe(int pipeFileDescriptor, char* fileNameBuffer)
 	for(i = 0; currentChar != '\n' || i < 256; i++)
 	{
 		read(pipeFileDescriptor, &currentChar, 1);
-		if(currentChar != '\n')
-		{
-			fileNameBuffer[i] = currentChar;
-		}
+		fileNameBuffer[i] = currentChar;
 	}
+	fileNameBuffer[i] = '\0';
 }
-

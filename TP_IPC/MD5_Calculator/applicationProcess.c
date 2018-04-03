@@ -84,6 +84,7 @@ int main(int argc, char const* argv[])
 	while(nextFile < quantityOfFiles)
 	{
 			nextFile = sendFiles(slaves, quantityOfSlaves, files, quantityOfFiles, nextFile);
+
 			accessSharedMemory(semaphoreId);
 			position = receiveHashes(slaves, quantityOfSlaves, sharedMemoryAddress, position, maxReadFileDescriptor);
 			sharedMemoryAddress[0] = position;
