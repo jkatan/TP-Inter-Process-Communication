@@ -23,11 +23,12 @@ int calculateQuantityOfSlaveProcessesToCreate(int quantityOfFiles);
 void createSlaveProcesses(slaveADT* slaves, int quantityOfSlaves);
 slaveADT createSlave(int writeToSlave, int readFromSlave, int pid);
 void terminateSlaves(slaveADT slaves[], int quantityOfSlaves);
-int sendFiles(slaveADT slave, int nextfile, char ** files, int quantityOfFiles, int quantityOfFilesToSend);
-void send(slaveADT slave, char * file);
-int receiveHashes(slaveADT slave, hashedFileADT * hashes, int* sharedMemory, int* position);
-int receiveHash(slaveADT slave, hashedFileADT * hashes, int nextHashedFile,  int* sharedMemory, int* position);
+int sendFiles(slaveADT* slaves, int quantityOfSlaves, char** files, int quantityOfFiles, int nextFile);
+void send(slaveADT slave, char* file);
+int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddress, int position, int maxReadFileDescriptor);
+int receiveHash(slaveADT slave,  int* sharedMemory, int position);
 void terminateSlave(slaveADT slave);
+int getMaxReadFileDescriptor(slaveADT* slaves, int quantityOfSlaves);
 
 
 #endif

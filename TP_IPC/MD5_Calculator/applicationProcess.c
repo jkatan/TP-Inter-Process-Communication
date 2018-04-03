@@ -9,7 +9,6 @@
 #include <sys/ipc.h>
 #include <sys/sem.h>
 #include <sys/shm.h>
-#include <sys/select.h>
 #include "applicationProcessLib.h"
 
 
@@ -17,28 +16,25 @@
 
 int main(int argc, char const* argv[])
 {
-
-	int i, quantityOfFilesSent, quantityOfHashesReceived;
 	int pid = getpid();
 	int* sharedMemoryAddress;
 	int position = 0;
-	int maxFileDescriptor = 0;
+	int maxReadFileDescriptor;
 	int sharedMemoryId;
 	int semaphoreId;
 	key_t key;
-	fd_set fileDescriptorSetToReadFromSlaves;
-	fd_set originalFileDescriptorSetToReadFromSlaves;
+
+
 
 	char ** files = (char **)argv;
 	int quantityOfFiles = argc - 1;
 	int nextFile = 0;
-	hashedFileADT * hashes = NULL;
 	printf("Program starting... \n");
 	int quantityOfSlaves = calculateQuantityOfSlaveProcessesToCreate(quantityOfFiles);
 
-	slaveADT slaves[quantityOfSlaves];
+	slaveADT* slaves = malloc(quantityOfSlaves * sizeof(slaveADT)); // preguntar
 	createSlaveProcesses(slaves, quantityOfSlaves);
-
+	maxReadFileDescriptor = getMaxReadFileDescriptor(slaves, quantityOfSlaves) + 1;
 	/*Creating semaphore*/
 	union semun
 	{
@@ -55,7 +51,7 @@ int main(int argc, char const* argv[])
 		exit(1);
 	}
 
-	if((semaphoreId = semget(key, 1, IPC_CREAT | 0644)) == -1)
+	if((semaphoreId = semget(key, 1, IPC_CREAT | 0600)) == -1)
 	{
 		perror("Couldn't get semaphore");
 		exit(1);
@@ -67,7 +63,7 @@ int main(int argc, char const* argv[])
 	}
 
 	/*Get shared Memory*/
-	if((sharedMemoryId = shmget(key, SHARED_MEMORY_SIZE, 0644 | IPC_CREAT)) == -1)
+	if((sharedMemoryId = shmget(key, SHARED_MEMORY_SIZE, 0777 | IPC_CREAT)) == -1)
 	{
     perror("Couldn't create shared memory");
     exit(1);
@@ -81,53 +77,23 @@ int main(int argc, char const* argv[])
 	sharedMemoryAddress[position]=1;
 	position++;
 	leaveSharedMemory(semaphoreId);
-	printf("Program processing... \nTotal quantity of files: %d \n", quantityOfFiles);
-	/*set select for FileDescriptrs*/
-	FD_ZERO(&originalFileDescriptorSetToReadFromSlaves);
-	for(i = 0; i < quantityOfSlaves; i++)
-	{
-		if(maxFileDescriptor < slaves[i]->readFrom)
-		{
-			maxFileDescriptor = slaves[i]->readFrom;
-		}
-		FD_SET(slaves[i]->readFrom, &originalFileDescriptorSetToReadFromSlaves);
-	}
-	maxFileDescriptor++;
 
+	/*set select for FileDescriptrs*/
+	printf("Program processing... \nTotal quantity of files: %d \n", quantityOfFiles);
 	/*Processing files*/
 	while(nextFile < quantityOfFiles)
 	{
-		FD_COPY(&originalFileDescriptorSetToReadFromSlaves, &fileDescriptorSetToReadFromSlaves);
-		if(select(maxFileDescriptor, &fileDescriptorSetToReadFromSlaves,NULL, NULL, NULL) == -1)
-		{
-			perror("Error reading file descriptors (select(...))");
-			exit(1);
-		}
-		printf("Quantity of files remaining: %d \n", quantityOfFiles-nextFile);
-		for(i = 0; i < quantityOfSlaves; i++)
-		{
+			nextFile = sendFiles(slaves, quantityOfSlaves, files, quantityOfFiles, nextFile);
 			accessSharedMemory(semaphoreId);
-			printf("Application Process in shared memory... \n");
-			if(FD_ISSET(slaves[i]->readFrom, &fileDescriptorSetToReadFromSlaves) != 0)
-			{
-				quantityOfHashesReceived =  receiveHashes(slaves[i], hashes, sharedMemoryAddress, &position);
-				sharedMemoryAddress[0] = position;
-			}
+			position = receiveHashes(slaves, quantityOfSlaves, sharedMemoryAddress, position, maxReadFileDescriptor);
+			sharedMemoryAddress[0] = position;
 			leaveSharedMemory(semaphoreId);
-			printf("Out of shared memory... \n");
-			slaves[i]->filesGivenToProcess -= quantityOfHashesReceived;
-
-			if(slaves[i]->filesGivenToProcess < MIN_QTY_FILES_TO_PROCESS)
-			{
-				quantityOfFilesSent = sendFiles(slaves[i], nextFile, files, quantityOfFiles, QTY_TO_SEND);
-				slaves[i]->filesGivenToProcess += quantityOfFilesSent;
-				nextFile += quantityOfFilesSent;
-			}
-		}
 	}
 
 	/*End Process*/
+
 	terminateSlaves(slaves, quantityOfSlaves);
+	free(slaves);
 	printf("Program ending... \n");
 
 	semctl(semaphoreId, 0, IPC_RMID, arguments);

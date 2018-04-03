@@ -5,6 +5,7 @@
 #include <string.h>
 #include <signal.h>
 #include <sys/types.h>
+#include <sys/select.h>
 #include "hashedFile.h"
 #include "applicationProcessLib.h"
 
@@ -67,68 +68,91 @@ void terminateSlaves(slaveADT slaves[], int quantityOfSlaves)
 void terminateSlave(slaveADT slave)
 {
 	kill(slave->slavePID, SIGTERM);
+	free(slave);
 }
 
-int sendFiles(slaveADT slave, int nextFile, char** files, int quantityOfFiles, int quantityOfFilesToSend)
+int sendFiles(slaveADT* slaves, int quantityOfSlaves, char** files, int quantityOfFiles, int nextFile)
 {
-	int i;
-	for(i = nextFile; i < quantityOfFilesToSend && i < quantityOfFiles ; i++)
+	printf("Quantity of files remaining: ");
+	int i, j;
+	for(i = 0; i < quantityOfSlaves; i++)
 	{
-			send(slave,files[i]);
+		if(slaves[i]->filesGivenToProcess < MIN_QTY_FILES_TO_PROCESS)
+		{
+			for(j = nextFile; j < nextFile + MIN_QTY_FILES_TO_PROCESS; j++)
+			{
+				send(slaves[i], files[j]);
+			}
+			slaves[i]->filesGivenToProcess += MIN_QTY_FILES_TO_PROCESS;
+			nextFile = j;
+		}
 	}
-	return i - nextFile;
+	return nextFile;
 }
 
 
 void send(slaveADT slave, char* file)
 {
-	char* fileToSend = malloc((strlen(file)+1)*sizeof(char));
-	char finishReadingFile[] = {'\n'};
-	strcat(fileToSend, file);
-	strcat(fileToSend, finishReadingFile);
-	write(slave->writeTo, file, strlen(fileToSend));
-}
-
-int receiveHashes(slaveADT slave, hashedFileADT* hashes, int* sharedMemoryAddress, int* position)
-{
-
-	int i = 0;
-	
-
-	while(receiveHash(slave, hashes, i, sharedMemoryAddress, position) != -1)
+	int i;
+	int fileLength = strlen(file);
+	char* fileToSend = malloc((fileLength + 1) * sizeof(char));
+	for(i = 0; i < strlen(file); i++)
 	{
-		i++;
+		fileToSend[i] = file[i];
 	}
-
-	return 0;
+	fileToSend[i] = '\n';
+	write(slave->writeTo, fileToSend, fileLength + 1);
+	free(fileToSend);
 }
 
-int receiveHash(slaveADT slave, hashedFileADT* hashes, int nextHashedFile, int* sharedMemoryAddress,  int* position)
+int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddress, int position, int maxReadFileDescriptor)
 {
-		int i = 0, currentPosition = 0;
-		char* buffer = malloc(1000 * sizeof(char));
-
-		while(i < 1000 && read(slave->readFrom,(buffer+i), 1) != -1 && *(buffer+i) !='\n')
+	int i;
+	fd_set fileDescriptorSetToReadFromSlaves;
+	FD_ZERO(&fileDescriptorSetToReadFromSlaves);
+	for(i = 0; i <  quantityOfSlaves; i++)
+	{
+		FD_SET(slaves[i]->readFrom, &fileDescriptorSetToReadFromSlaves);
+	}
+	if(select(maxReadFileDescriptor, &fileDescriptorSetToReadFromSlaves, NULL, NULL, NULL) == -1)
+	{
+		perror("Failed to select() file descriptors from slave");
+		exit(1);
+	}
+	for(i = 0; i < quantityOfSlaves; i++)
+	{
+		if(FD_ISSET(slaves[i]->readFrom, &fileDescriptorSetToReadFromSlaves))
 		{
-
-			if(read(slave->readFrom,(buffer + i), 1) == -1){
-				free(buffer);
-				return -1;
-			}
-
-			i++;
+			position = receiveHash(slaves[i], sharedMemoryAddress, position);
 		}
-		//falta chequeo de que *position no se pase del tamaño de la shared memory
-		if(*(buffer+i) =='\n')//last position of filename:hash
+	}
+	return position;
+}
+
+int receiveHash(slaveADT slave, int* sharedMemoryAddress,  int position)
+{
+		int end = 0;
+		while(!end && read(slave->readFrom,(sharedMemoryAddress+position), 1) >=0)
 		{
-			while(currentPosition < i){
-				sharedMemoryAddress[*position + currentPosition] = *(buffer + currentPosition);
-				currentPosition++;
+			if(*(sharedMemoryAddress+position) == '\n')
+			{
+				end = 1;
 			}
-			*position += currentPosition;
-			sharedMemoryAddress[*position] = '\n';
-			*position += 1;
+			position++;
 		}
-		free(buffer);
-		return 1;
+		return position;
+}
+
+int getMaxReadFileDescriptor(slaveADT* slaves, int quantityOfSlaves)
+{
+ int max = 0;
+ int i = 0;
+ for(i = 0; i < quantityOfSlaves; i++)
+ {
+	 if(max < slaves[i]->readFrom)
+	 {
+		 max = slaves[i]->readFrom;
+	 }
+ }
+ return max;
 }

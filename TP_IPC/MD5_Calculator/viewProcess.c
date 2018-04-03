@@ -23,19 +23,19 @@ int main (int argc, char *argv[])
 
   key = ftok("./memory", appProcessPid);
 
-  if((semaphoreId = semget(key, 1, IPC_CREAT | 0644)) == -1)
+  if((semaphoreId = semget(key, 1, IPC_CREAT | 0777)) == -1)
   {
     perror("Couldn't get semaphore");
     exit(1);
   }
 
   /*Get shared Memory*/
-  if((sharedMemoryId = shmget(key, SHARED_MEMORY_SIZE, 0644 | IPC_CREAT)) == -1)
+  if((sharedMemoryId = shmget(key, SHARED_MEMORY_SIZE, 0600 | IPC_CREAT)) == -1)
   {
     perror("Couldn't create shared memory");
     exit(1);
   }
-  if((int)(sharedMemoryAddress = shmat(sharedMemoryId, (void *)0, 0)) ==-1)
+  if((int)(sharedMemoryAddress = shmat(sharedMemoryId, (void *)0, 0)) == -1)
   {
 
     perror("Couldn't map memory");
