@@ -13,9 +13,9 @@ int main(int argc, char const *argv[])
 	printf("Hello from slave:%d \n", getpid());
 
 	struct sigaction action;
-  	memset(&action, 0, sizeof(struct sigaction));
-  	action.sa_handler = terminate;
-  	sigaction(SIGTERM, &action, NULL);
+	memset(&action, 0, sizeof(struct sigaction));
+	action.sa_handler = terminate;
+	sigaction(SIGTERM, &action, NULL);
 
 	char* filenameBuffer = calloc(256, sizeof(char));
 	hashedFileADT file;
@@ -31,12 +31,11 @@ int main(int argc, char const *argv[])
 			printf("%s:%s  (CALCULTED FROM SLAVE:%d)\n",file->hash, file->filename, getpid());
 			sendHashedFileThroughPipe(writeEndOfPipe, file);
 		}
-		//falta liberar la estructura file;
 	}
 	free(filenameBuffer);
 }
 
 void terminate(int signum)
 {
-    done = 1;
+  done = 1;
 }

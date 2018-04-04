@@ -15,27 +15,22 @@
 int main(int argc, char const* argv[])
 {
 	char** files = (char **)(argv+1);
-	int pid = getpid();
-	int* sharedMemoryAddress;
-	int position = 2;
-	int maxReadFileDescriptor;
-	int sharedMemoryId;
+	slaveADT* slaves;
+	int quantityOfSlaves, maxReadFileDescriptor;
+	int* sharedMemoryAddress; int sharedMemoryId;
 	int semaphoreId;
 	key_t key;
-	int quantityOfHashesReceived = 0;
-	int quantityOfHashesExpected = 0;
-	int quantityOfFiles = argc-1;
+	int quantityOfHashesReceived = 0, quantityOfHashesExpected = 0, quantityOfFiles = argc-1;
+	int pid = getpid();
 
 	queueADT filesQueue = createQueue(argc);
 	enqueueFiles(filesQueue, files, quantityOfFiles);
 
+	quantityOfSlaves = calculateQuantityOfSlaveProcessesToCreate(filesQueue->actualSize);
+
 	printf("Application process starting... \n");
-	printf("PID of application process: %d \n", getpid());
-	int quantityOfSlaves = calculateQuantityOfSlaveProcessesToCreate(filesQueue->actualSize);
-	printf("%d slave(s) created...\n", quantityOfSlaves);
 
-
-	slaveADT* slaves = malloc(quantityOfSlaves * sizeof(slaveADT)); // preguntar
+	slaves = malloc(quantityOfSlaves * sizeof(slaveADT)); // preguntar
 	createSlaveProcesses(slaves, quantityOfSlaves);
 	maxReadFileDescriptor = getMaxReadFileDescriptor(slaves, quantityOfSlaves) + 1;
 
@@ -78,30 +73,31 @@ int main(int argc, char const* argv[])
 	}
 
 	accessSharedMemory(semaphoreId);
-	sharedMemoryAddress[0] = position;
+	sharedMemoryAddress[0] = 2;
 	sharedMemoryAddress[1] = 0;
 	leaveSharedMemory(semaphoreId);
 
 	printf("Program processing... \nTotal quantity of files: %d \n", filesQueue->actualSize);
 	printf("Excecute viewProcess to see results in stdout...\n");
+
 	/*Processing files*/
 	quantityOfHashesExpected = filesQueue->actualSize;
 	while(quantityOfHashesReceived < quantityOfHashesExpected)
 	{
-			sendFiles(slaves, quantityOfSlaves, filesQueue);
-			accessSharedMemory(semaphoreId);
-			quantityOfHashesReceived += receiveHashes(slaves, quantityOfSlaves, sharedMemoryAddress, maxReadFileDescriptor);
-			leaveSharedMemory(semaphoreId);
+		sendFiles(slaves, quantityOfSlaves, filesQueue);
+		accessSharedMemory(semaphoreId);
+		quantityOfHashesReceived += receiveHashes(slaves, quantityOfSlaves, sharedMemoryAddress, maxReadFileDescriptor);
+		leaveSharedMemory(semaphoreId);
 	}
 
-	printf("Quantity of hashes received:%d \n", quantityOfHashesReceived);
 	/*End Process*/
 	printf("Application process ending... \n");
-	terminateSlaves(slaves, quantityOfSlaves); //chequear si está liberando bien la memoria.
+	terminateSlaves(slaves, quantityOfSlaves);
 	free(slaves);
 	freeQueue(filesQueue);
+
 	accessSharedMemory(semaphoreId);
-	sharedMemoryAddress[1] = 1;
+	sharedMemoryAddress[1] = 1; //signals viewProcess to end
 	leaveSharedMemory(semaphoreId);
 
 	sendSharedMemoryDataToNewFile("SavedHashes.txt", sharedMemoryAddress);

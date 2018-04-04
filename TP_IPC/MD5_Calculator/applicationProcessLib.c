@@ -115,7 +115,7 @@ int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddr
 {
 	int i, quantityOfHashesReceived = 0;
 	fd_set fileDescriptorSetToReadFromSlaves;
-	int ts;
+	int selectRet;
 
 	FD_ZERO(&fileDescriptorSetToReadFromSlaves);
 	for(i = 0; i <  quantityOfSlaves; i++)
@@ -125,15 +125,15 @@ int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddr
 	}
 
 
-	ts = select(maxReadFileDescriptor, &fileDescriptorSetToReadFromSlaves, NULL, NULL, NULL);
+	selectRet = select(maxReadFileDescriptor, &fileDescriptorSetToReadFromSlaves, NULL, NULL, NULL);
 
-	if(ts == -1)
+	if(selectRet == -1)
 	{
 		perror("Failed to select() file descriptors from slave");
 		exit(1);
 	}
 
-	for(i = 0; i < quantityOfSlaves && ts != 0; i++)
+	for(i = 0; i < quantityOfSlaves && selectRet != 0; i++)
 	{
 		if(FD_ISSET(slaves[i]->readFrom, &fileDescriptorSetToReadFromSlaves))
 		{
@@ -146,32 +146,32 @@ int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddr
 
 int receiveHash(slaveADT slave, int* sharedMemoryAddress)
 {
-		int end = 0;
-		int position = sharedMemoryAddress[0];
-		while(!end && read(slave->readFrom,(sharedMemoryAddress+position), 1) >=0)
+	int end = 0;
+	int position = sharedMemoryAddress[0];
+	while(!end && read(slave->readFrom,(sharedMemoryAddress+position), 1) >=0)
+	{
+		if(*(sharedMemoryAddress+position) == '\n')
 		{
-			if(*(sharedMemoryAddress+position) == '\n')
-			{
-				end = 1;
-			}
-			position++;
+			end = 1;
 		}
-		sharedMemoryAddress[0] = position;
-		return 1;
+		position++;
+	}
+	sharedMemoryAddress[0] = position;
+	return 1;
 }
 
 int getMaxReadFileDescriptor(slaveADT* slaves, int quantityOfSlaves)
 {
- int max = 0;
- int i = 0;
- for(i = 0; i < quantityOfSlaves; i++)
- {
+	int max = 0;
+	int i = 0;
+	for(i = 0; i < quantityOfSlaves; i++)
+	{
 	 if(max < slaves[i]->readFrom)
 	 {
 		 max = slaves[i]->readFrom;
 	 }
- }
- return max;
+	}
+	return max;
 }
 
 void sendSharedMemoryDataToNewFile(char* newFileName, int* sharedMemoryAddress)
@@ -179,13 +179,13 @@ void sendSharedMemoryDataToNewFile(char* newFileName, int* sharedMemoryAddress)
 	FILE* newFile = fopen(newFileName, "w+");
 
 	int position = 2;
-  	while (position < sharedMemoryAddress[0])
-  	{
-    	fwrite(sharedMemoryAddress+position, 1, 1, newFile);
-    	position++;
-  	}
+	while (position < sharedMemoryAddress[0])
+	{
+  	fwrite(sharedMemoryAddress+position, 1, 1, newFile);
+  	position++;
+	}
 
-  	fclose(newFile);
+	fclose(newFile);
 }
 
 void enqueueFiles(queueADT myQueue, char* files[], int numberOfFiles)
@@ -199,9 +199,9 @@ void enqueueFiles(queueADT myQueue, char* files[], int numberOfFiles)
 	}
 }
 
-int isARegularFile(char* path)
+int isARegularFile(char* pathToFile)
 {
 	struct stat buffer;
-  stat(path, &buffer);
+  stat(pathToFile, &buffer);
   return S_ISREG(buffer.st_mode);
 }

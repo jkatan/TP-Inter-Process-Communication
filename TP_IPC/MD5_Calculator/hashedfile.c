@@ -9,6 +9,7 @@ hashedFileADT createHashedFile(char* filename)
 	newHashedFile->hash = calloc(1, sizeof(char) * (HASH_LENGTH + 1));
 	return newHashedFile;
 }
+
 void freeHashedFile(hashedFileADT hashedFile)
 {
 	free(hashedFile->filename);

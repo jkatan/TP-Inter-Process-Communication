@@ -3,9 +3,9 @@
 #include  <sys/shm.h>
 #include  <stdio.h>
 #include  <stdlib.h>
-#include <semaphore.h>
 #include <fcntl.h>
 #include <sys/stat.h>
+#include <sys/sem.h>
 #include <unistd.h>
 #include "sharedMemory.h"
 
@@ -14,17 +14,17 @@
 
 int main (int argc, char *argv[])
 {
-  int i;
-  int terminate;
-  int sharedMemoryId;
-  int semaphoreId;
+  int i, terminate;
+  int sharedMemoryId, semaphoreId;
   int* sharedMemoryAddress;
   key_t key;
   int appProcessPid = atoi(argv[1]);
+
   printf("View process starting... \n");
 
   key = ftok("./memory", appProcessPid);
 
+  /*Get semaphore*/
   if((semaphoreId = semget(key, 1, IPC_CREAT | 0600)) == -1)
   {
     perror("Couldn't get semaphore");
@@ -56,6 +56,5 @@ int main (int argc, char *argv[])
     terminate = sharedMemoryAddress[1];
     leaveSharedMemory(semaphoreId);
   }
-
   shmdt(sharedMemoryAddress);
 }
