@@ -92,7 +92,6 @@ void sendFiles(slaveADT* slaves, int quantityOfSlaves, queueADT filesQueue)
 			slaves[i]->filesGivenToProcess++;
 		}
 	}
-
 }
 
 
@@ -109,6 +108,7 @@ void send(slaveADT slave, char* file)
 	fileToSend[i] = '\n';
 	write(slave->writeTo, fileToSend, fileLength + 1);
 	free(fileToSend);
+
 }
 
 int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddress, int maxReadFileDescriptor)

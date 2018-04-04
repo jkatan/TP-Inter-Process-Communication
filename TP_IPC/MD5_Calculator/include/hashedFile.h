@@ -14,5 +14,6 @@ typedef struct hashedFileCDT
 
 
 hashedFileADT createHashedFile(char* filename);
+void freeHashedFile(hashedFileADT hashedFile);
 
 #endif

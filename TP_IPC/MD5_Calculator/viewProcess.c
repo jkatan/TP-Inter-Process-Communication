@@ -20,7 +20,7 @@ int main (int argc, char *argv[])
   int* sharedMemoryAddress;
   key_t key;
   int appProcessPid = atoi(argv[1]);
-  printf("%d\n", appProcessPid);
+  printf("View process starting... \n");
 
   key = ftok("./memory", appProcessPid);
 

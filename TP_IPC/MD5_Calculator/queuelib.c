@@ -4,7 +4,7 @@
 
 queueADT createQueue(int maxSize)
 {
-	
+
 	queueADT newQueue = (queueADT) malloc(sizeof(queueCDT));
 	newQueue->front = (nodeADT) NULL;
 	newQueue->rear = (nodeADT) NULL;
@@ -26,7 +26,7 @@ int isEmpty(queueADT myQueue)
 
 void enqueueElement(queueADT myQueue, char* fileToEnque)
 {
-	
+
 	if(myQueue->actualSize != myQueue->maxSize)
 	{
 		nodeADT nodeToAdd = (nodeADT) malloc(sizeof(nodeCDT));
@@ -37,7 +37,7 @@ void enqueueElement(queueADT myQueue, char* fileToEnque)
 		if(isEmpty(myQueue))
 		{
 			myQueue->front = nodeToAdd;
-			
+
 		}
 		else
 		{
@@ -53,16 +53,26 @@ void enqueueElement(queueADT myQueue, char* fileToEnque)
 	}
 	return;
 }
-
+void freeQueue(queueADT myQueue)
+{
+	while(!isEmpty(myQueue))
+	{
+		dequeueElement(myQueue);
+	}
+	free(myQueue);
+}
 char* dequeueElement(queueADT myQueue)
 {
+	nodeADT aux;
 	if(isEmpty(myQueue)){
 		perror("The queue is empty");
 		return NULL;
 	}
 
 	char* fileNameToPop = myQueue->front->fileName;
+	aux = myQueue->front;
 	myQueue->front = myQueue->front->nextNode;
+	free(aux);
 	myQueue->actualSize--;
 
 	return fileNameToPop;

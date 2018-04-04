@@ -12,9 +12,6 @@
 #include "applicationProcessLib.h"
 #include "queuelib.h"
 
-
-
-
 int main(int argc, char const* argv[])
 {
 	char** files = (char **)(argv+1);
@@ -97,9 +94,10 @@ int main(int argc, char const* argv[])
 
 	printf("Quantity of hashes received:%d \n", quantityOfHashesReceived);
 	/*End Process*/
-	printf("Program ending... \n");
+	printf("Application process ending... \n");
 	terminateSlaves(slaves, quantityOfSlaves); //chequear si está liberando bien la memoria.
 	free(slaves);
+	freeQueue(filesQueue);
 
 	sendSharedMemoryDataToNewFile("SavedHashes.txt", sharedMemoryAddress);
 

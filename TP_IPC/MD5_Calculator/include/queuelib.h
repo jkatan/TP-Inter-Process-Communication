@@ -26,6 +26,6 @@ void enqueueElement(queueADT myQueue, char* fileToEnque);
 char* dequeueElement(queueADT myQueue);
 int isEmpty(queueADT myQueue);
 int queueCurrentSize(queueADT myQueue);
+void freeQueue(queueADT myQueue);
 
 #endif
-
