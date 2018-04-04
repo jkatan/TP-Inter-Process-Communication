@@ -17,7 +17,7 @@ int main(int argc, char const *argv[])
   	action.sa_handler = terminate;
   	sigaction(SIGTERM, &action, NULL);
 
-	char* filenameBuffer = malloc(sizeof(char)*256);
+	char* filenameBuffer = calloc(256, sizeof(char));
 	hashedFileADT file;
 
 	int readEndOfPipe = atoi(argv[1]);
@@ -25,12 +25,12 @@ int main(int argc, char const *argv[])
 	while(!done)
 	{
 		readFileFromPipe(readEndOfPipe, filenameBuffer);
-
-
-		file = calculateFileMD5Hash(filenameBuffer);
-		printf("%s:%s  (CALCULTED FROM SLAVE:%d)\n",file->hash, file->filename, getpid());
-
-		sendHashedFileThroughPipe(writeEndOfPipe, file);
+		if(strlen(filenameBuffer) > 0)
+		{
+			file = calculateFileMD5Hash(filenameBuffer);
+			printf("%s:%s  (CALCULTED FROM SLAVE:%d)\n",file->hash, file->filename, getpid());
+			sendHashedFileThroughPipe(writeEndOfPipe, file);
+		}
 		//falta liberar la estructura file;
 	}
 	free(filenameBuffer);

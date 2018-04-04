@@ -102,8 +102,8 @@ void send(slaveADT slave, char* file)
 	int i;
 	int fileLength = strlen(file);
 	char* fileToSend = calloc((fileLength + 1) , sizeof(char));
-	printf("-----MANDO DESDE APPLICATION %s, %d A SLAVE %d\n" , file, (int)strlen(file), slave->slavePID);
-	for(i = 0; i < strlen(file); i++)
+
+	for(i = 0; i < fileLength; i++)
 	{
 		fileToSend[i] = file[i];
 	}
