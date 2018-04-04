@@ -174,3 +174,17 @@ int getMaxReadFileDescriptor(slaveADT* slaves, int quantityOfSlaves)
  }
  return max;
 }
+
+void sendSharedMemoryDataToNewFile(char* newFileName, int* sharedMemoryAddress)
+{
+	FILE* newFile = fopen(newFileName, "w+");
+
+	int position = 1;
+  	while (position < sharedMemoryAddress[0])
+  	{
+    	fwrite(sharedMemoryAddress+position, 1, 1, newFile);
+    	position++;
+  	}
+
+  	fclose(newFile);
+}

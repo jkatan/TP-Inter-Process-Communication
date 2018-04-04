@@ -24,8 +24,6 @@ int main(int argc, char const* argv[])
 	int semaphoreId;
 	key_t key;
 
-
-
 	char ** files = (char **)(argv+1);
 	int quantityOfFiles = argc - 1;
 	int quantityOfHashesReceived = 0;
@@ -98,6 +96,8 @@ int main(int argc, char const* argv[])
 	printf("Program ending... \n");
 	terminateSlaves(slaves, quantityOfSlaves); //chequear si está liberando bien la memoria.
 	free(slaves);
+
+	sendSharedMemoryDataToNewFile("SavedHashes.txt", sharedMemoryAddress);
 
 	semctl(semaphoreId, 0, IPC_RMID, arguments);
 	shmdt(sharedMemoryAddress);

@@ -29,6 +29,6 @@ int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddr
 int receiveHash(slaveADT slave,  int* sharedMemory);
 void terminateSlave(slaveADT slave);
 int getMaxReadFileDescriptor(slaveADT* slaves, int quantityOfSlaves);
-
+void sendSharedMemoryDataToNewFile(char* newFileName, int* sharedMemoryAddress);
 
 #endif
