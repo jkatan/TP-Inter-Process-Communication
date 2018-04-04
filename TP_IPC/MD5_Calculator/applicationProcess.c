@@ -94,7 +94,6 @@ int main(int argc, char const* argv[])
 	}
 
 	printf("Quantity of hashes received:%d \n", quantityOfHashesReceived);
-	sleep(120);
 	/*End Process*/
 	printf("Program ending... \n");
 	terminateSlaves(slaves, quantityOfSlaves); //chequear si está liberando bien la memoria.
