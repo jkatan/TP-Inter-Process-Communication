@@ -10,6 +10,7 @@
 #include <sys/sem.h>
 #include <sys/shm.h>
 #include "applicationProcessLib.h"
+#include "queuelib.h"
 
 
 
@@ -23,11 +24,12 @@ int main(int argc, char const* argv[])
 	int sharedMemoryId;
 	int semaphoreId;
 	key_t key;
-
-	char ** files = (char **)(argv+1);
-	int quantityOfFiles = argc - 1;
 	int quantityOfHashesReceived = 0;
-	int nextFile = 0;
+	int quantityOfFiles = argc-1;
+
+	queueADT filesQueue = createQueue(argc);
+	enqueueFiles(filesQueue, argv, argc);
+
 	printf("Application process starting... \n");
 	printf("PID of application process: %d \n", getpid());
 	int quantityOfSlaves = calculateQuantityOfSlaveProcessesToCreate(quantityOfFiles);
@@ -80,12 +82,14 @@ int main(int argc, char const* argv[])
 	leaveSharedMemory(semaphoreId);
 
 	/*set select for FileDescriptrs*/
-	printf("Program processing... \nTotal quantity of files: %d \n", quantityOfFiles);
+	printf("Program processing... \nTotal quantity of files: %d \n", filesQueue->actualSize);
 	/*Processing files*/
-	while(quantityOfHashesReceived < quantityOfFiles)
+	while(!isEmpty(filesQueue)){
+		printf("%s \n", dequeueElement(filesQueue));
+	}
+	while(!isEmpty(filesQueue))
 	{
-			if(nextFile < quantityOfFiles)
-				nextFile = sendFiles(slaves, quantityOfSlaves, files, quantityOfFiles, nextFile);
+			sendFiles(slaves, quantityOfSlaves, filesQueue);
 			accessSharedMemory(semaphoreId);
 			quantityOfHashesReceived += receiveHashes(slaves, quantityOfSlaves, sharedMemoryAddress, maxReadFileDescriptor);
 			leaveSharedMemory(semaphoreId);
@@ -105,3 +109,4 @@ int main(int argc, char const* argv[])
 
 	return 0;
 }
+

@@ -6,8 +6,10 @@
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/select.h>
+#include <sys/stat.h>
 #include "hashedFile.h"
 #include "applicationProcessLib.h"
+#include "queuelib.h"
 
 
 int calculateQuantityOfSlaveProcessesToCreate(int quantityOfFiles)
@@ -77,23 +79,20 @@ void terminateSlave(slaveADT slave)
 	free(slave);
 }
 
-int sendFiles(slaveADT* slaves, int quantityOfSlaves, char** files, int quantityOfFiles, int nextFile)
+void sendFiles(slaveADT* slaves, int quantityOfSlaves, queueADT filesQueue)
 {
 
-	int i, j;
+	int i;
 	for(i = 0; i < quantityOfSlaves; i++)
 	{
-		if(slaves[i]->filesGivenToProcess < MIN_QTY_FILES_TO_PROCESS)
+		while(slaves[i]->filesGivenToProcess < MIN_QTY_FILES_TO_PROCESS && !isEmpty(filesQueue))
 		{
-			for(j = nextFile; j < nextFile + MIN_QTY_FILES_TO_PROCESS && j < quantityOfFiles; j++)
-			{
-				send(slaves[i], files[j]);
-			}
-			slaves[i]->filesGivenToProcess += j - nextFile;
-			nextFile = j;
+			char* file = dequeueElement(filesQueue);
+			send(slaves[i], file);
+			slaves[i]->filesGivenToProcess++;
 		}
 	}
-	return nextFile;
+
 }
 
 
@@ -187,4 +186,22 @@ void sendSharedMemoryDataToNewFile(char* newFileName, int* sharedMemoryAddress)
   	}
 
   	fclose(newFile);
+}
+
+void enqueueFiles(queueADT myQueue, char* files[], int numberOfFiles)
+{
+	for(int i = 0; i < numberOfFiles; i++)
+	{
+		if(isARegularFile(files[i]))
+		{
+			enqueueElement(myQueue, files[i]);
+		}
+	}
+}
+
+int isARegularFile(char* path)
+{
+	struct stat buffer;
+   	stat(path, &buffer);
+   	return S_ISREG(buffer.st_mode);
 }
