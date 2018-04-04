@@ -31,7 +31,7 @@ int main(int argc, char const* argv[])
 
 	printf("Application process starting... \n");
 	printf("PID of application process: %d \n", getpid());
-	int quantityOfSlaves = calculateQuantityOfSlaveProcessesToCreate(quantityOfFiles);
+	int quantityOfSlaves = calculateQuantityOfSlaveProcessesToCreate(filesQueue->actualSize);
 	printf("%d slave(s) created...\n", quantityOfSlaves);
 
 
