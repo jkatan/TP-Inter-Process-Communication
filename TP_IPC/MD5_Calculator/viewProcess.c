@@ -20,17 +20,18 @@ int main (int argc, char *argv[])
   int* sharedMemoryAddress;
   key_t key;
   int appProcessPid = atoi(argv[1]);
+  printf("%d\n", appProcessPid);
 
   key = ftok("./memory", appProcessPid);
 
-  if((semaphoreId = semget(key, 1, IPC_CREAT | 0777)) == -1)
+  if((semaphoreId = semget(key, 1, IPC_CREAT | 0600)) == -1)
   {
     perror("Couldn't get semaphore");
     exit(1);
   }
 
   /*Get shared Memory*/
-  if((sharedMemoryId = shmget(key, SHARED_MEMORY_SIZE, 0600 | IPC_CREAT)) == -1)
+  if((sharedMemoryId = shmget(key, SHARED_MEMORY_SIZE, 0777 | IPC_CREAT)) == -1)
   {
     perror("Couldn't create shared memory");
     exit(1);
@@ -45,8 +46,8 @@ int main (int argc, char *argv[])
   i = 1;
   while (i < sharedMemoryAddress[0])
   {
-    i++;
     fwrite(sharedMemoryAddress+i, 1, 1, stdout);
+    i++;
   }
   leaveSharedMemory(semaphoreId);
   shmdt(sharedMemoryAddress);

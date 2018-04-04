@@ -18,7 +18,7 @@ int main(int argc, char const* argv[])
 {
 	int pid = getpid();
 	int* sharedMemoryAddress;
-	int position = 0;
+	int position = 1;
 	int maxReadFileDescriptor;
 	int sharedMemoryId;
 	int semaphoreId;
@@ -30,9 +30,10 @@ int main(int argc, char const* argv[])
 	int quantityOfFiles = argc - 1;
 	int quantityOfHashesReceived = 0;
 	int nextFile = 0;
-	printf("Program starting... \n");
+	printf("Application process starting... \n");
+	printf("PID of application process: %d \n", getpid());
 	int quantityOfSlaves = calculateQuantityOfSlaveProcessesToCreate(quantityOfFiles);
-	printf("%d slaves created...\n", quantityOfSlaves);
+	printf("%d slave(s) created...\n", quantityOfSlaves);
 
 
 	slaveADT* slaves = malloc(quantityOfSlaves * sizeof(slaveADT)); // preguntar
@@ -77,8 +78,7 @@ int main(int argc, char const* argv[])
 		exit(1);
 	}
 	accessSharedMemory(semaphoreId);
-	sharedMemoryAddress[position]=1;
-	position++;
+	sharedMemoryAddress[0] = position;
 	leaveSharedMemory(semaphoreId);
 
 	/*set select for FileDescriptrs*/
@@ -86,15 +86,15 @@ int main(int argc, char const* argv[])
 	/*Processing files*/
 	while(quantityOfHashesReceived < quantityOfFiles)
 	{
-
 			if(nextFile < quantityOfFiles)
 				nextFile = sendFiles(slaves, quantityOfSlaves, files, quantityOfFiles, nextFile);
 			accessSharedMemory(semaphoreId);
 			quantityOfHashesReceived += receiveHashes(slaves, quantityOfSlaves, sharedMemoryAddress, maxReadFileDescriptor);
 			leaveSharedMemory(semaphoreId);
 	}
-	printf("Quantity of hashes received:%d \n", quantityOfHashesReceived);
 
+	printf("Quantity of hashes received:%d \n", quantityOfHashesReceived);
+	sleep(120);
 	/*End Process*/
 	printf("Program ending... \n");
 	terminateSlaves(slaves, quantityOfSlaves); //chequear si está liberando bien la memoria.
