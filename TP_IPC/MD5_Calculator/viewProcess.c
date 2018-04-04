@@ -15,6 +15,7 @@
 int main (int argc, char *argv[])
 {
   int i;
+  int terminate;
   int sharedMemoryId;
   int semaphoreId;
   int* sharedMemoryAddress;
@@ -42,13 +43,19 @@ int main (int argc, char *argv[])
     perror("Couldn't map memory");
     exit(1);
   }
-  accessSharedMemory(semaphoreId);
-  i = 1;
-  while (i < sharedMemoryAddress[0])
+  i = 2;
+  terminate = 0;
+  while(!terminate)
   {
-    fwrite(sharedMemoryAddress+i, 1, 1, stdout);
-    i++;
+    accessSharedMemory(semaphoreId);
+    while (i < sharedMemoryAddress[0])
+    {
+      fwrite(sharedMemoryAddress+i, 1, 1, stdout);
+      i++;
+    }
+    terminate = sharedMemoryAddress[1];
+    leaveSharedMemory(semaphoreId);
   }
-  leaveSharedMemory(semaphoreId);
+
   shmdt(sharedMemoryAddress);
 }

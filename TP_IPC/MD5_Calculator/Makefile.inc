@@ -1,2 +1,2 @@
 GCC=gcc
-GCCFLAGS= -Wall -Iinclude -lm
+GCCFLAGS= -Wall -Iinclude -lm -pedantic

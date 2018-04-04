@@ -17,7 +17,7 @@ int main(int argc, char const* argv[])
 	char** files = (char **)(argv+1);
 	int pid = getpid();
 	int* sharedMemoryAddress;
-	int position = 1;
+	int position = 2;
 	int maxReadFileDescriptor;
 	int sharedMemoryId;
 	int semaphoreId;
@@ -38,6 +38,7 @@ int main(int argc, char const* argv[])
 	slaveADT* slaves = malloc(quantityOfSlaves * sizeof(slaveADT)); // preguntar
 	createSlaveProcesses(slaves, quantityOfSlaves);
 	maxReadFileDescriptor = getMaxReadFileDescriptor(slaves, quantityOfSlaves) + 1;
+
 	/*Creating semaphore*/
 	union semun
 	{
@@ -46,7 +47,6 @@ int main(int argc, char const* argv[])
                ushort *array;
   } arguments;
 	arguments.val = 1;
-
 
 	if((key = ftok("./memory", pid)) == -1)
 	{
@@ -76,12 +76,14 @@ int main(int argc, char const* argv[])
 		perror("Couldn't map memory");
 		exit(1);
 	}
+
 	accessSharedMemory(semaphoreId);
 	sharedMemoryAddress[0] = position;
+	sharedMemoryAddress[1] = 0;
 	leaveSharedMemory(semaphoreId);
 
-	/*set select for FileDescriptrs*/
 	printf("Program processing... \nTotal quantity of files: %d \n", filesQueue->actualSize);
+	printf("Excecute viewProcess to see results in stdout...\n");
 	/*Processing files*/
 	quantityOfHashesExpected = filesQueue->actualSize;
 	while(quantityOfHashesReceived < quantityOfHashesExpected)
@@ -98,6 +100,9 @@ int main(int argc, char const* argv[])
 	terminateSlaves(slaves, quantityOfSlaves); //chequear si está liberando bien la memoria.
 	free(slaves);
 	freeQueue(filesQueue);
+	accessSharedMemory(semaphoreId);
+	sharedMemoryAddress[1] = 1;
+	leaveSharedMemory(semaphoreId);
 
 	sendSharedMemoryDataToNewFile("SavedHashes.txt", sharedMemoryAddress);
 

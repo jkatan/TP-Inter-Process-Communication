@@ -1,0 +1,5 @@
+Makefile:cbfedfcd989ca83fa920b4c07f18d824
+SavedHashes.txt:f394e4a860cca8c86a81955a920f6b52
+applicationProcess:db46350fdf7720b1a3a5fb0d2242877c
+memory:d41d8cd98f00b204e9800998ecf8427e
+viewProcess:e67179ad598c9178362517296ad583c7
