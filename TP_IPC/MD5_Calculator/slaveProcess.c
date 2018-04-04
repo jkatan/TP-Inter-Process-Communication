@@ -10,8 +10,6 @@ volatile int done = 0;
 
 int main(int argc, char const *argv[])
 {
-	printf("Hello from slave:%d \n", getpid());
-
 	struct sigaction action;
 	memset(&action, 0, sizeof(struct sigaction));
 	action.sa_handler = terminate;
@@ -28,7 +26,6 @@ int main(int argc, char const *argv[])
 		if(strlen(filenameBuffer) > 0)
 		{
 			file = calculateFileMD5Hash(filenameBuffer);
-			printf("%s:%s  (CALCULTED FROM SLAVE:%d)\n",file->hash, file->filename, getpid());
 			sendHashedFileThroughPipe(writeEndOfPipe, file);
 		}
 	}

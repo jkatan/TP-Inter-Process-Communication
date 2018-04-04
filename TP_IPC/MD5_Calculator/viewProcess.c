@@ -9,20 +9,21 @@
 #include <unistd.h>
 #include "sharedMemory.h"
 
-
-
-
 int main (int argc, char *argv[])
 {
   int i, terminate;
   int sharedMemoryId, semaphoreId;
   int* sharedMemoryAddress;
   key_t key;
-  int appProcessPid = atoi(argv[1]);
+  int appProcessPid; 
 
-  printf("View process starting... \n");
+  if(argc < 2)
+  {
+    printf("No arguments passed to program, viewProcess receives one argument\n");
+    exit(0);
+  }
 
-  key = ftok("./memory", appProcessPid);
+  key = ftok("./Makefile", appProcessPid);
 
   /*Get semaphore*/
   if((semaphoreId = semget(key, 1, IPC_CREAT | 0600)) == -1)

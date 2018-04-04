@@ -23,12 +23,12 @@ int main(int argc, char const* argv[])
 	int quantityOfHashesReceived = 0, quantityOfHashesExpected = 0, quantityOfFiles = argc-1;
 	int pid = getpid();
 
+	printf("Application process starting...\n");
+
 	queueADT filesQueue = createQueue(argc);
 	enqueueFiles(filesQueue, files, quantityOfFiles);
 
 	quantityOfSlaves = calculateQuantityOfSlaveProcessesToCreate(filesQueue->actualSize);
-
-	printf("Application process starting... \n");
 
 	slaves = malloc(quantityOfSlaves * sizeof(slaveADT)); // preguntar
 	createSlaveProcesses(slaves, quantityOfSlaves);
@@ -43,7 +43,7 @@ int main(int argc, char const* argv[])
   } arguments;
 	arguments.val = 1;
 
-	if((key = ftok("./memory", pid)) == -1)
+	if((key = ftok("./Makefile", pid)) == -1)
 	{
 		perror("Couldn't create semaphore:");
 		exit(1);
@@ -77,9 +77,6 @@ int main(int argc, char const* argv[])
 	sharedMemoryAddress[1] = 0;
 	leaveSharedMemory(semaphoreId);
 
-	printf("Program processing... \nTotal quantity of files: %d \n", filesQueue->actualSize);
-	printf("Excecute viewProcess to see results in stdout...\n");
-
 	/*Processing files*/
 	quantityOfHashesExpected = filesQueue->actualSize;
 	while(quantityOfHashesReceived < quantityOfHashesExpected)
@@ -91,7 +88,6 @@ int main(int argc, char const* argv[])
 	}
 
 	/*End Process*/
-	printf("Application process ending... \n");
 	terminateSlaves(slaves, quantityOfSlaves);
 	free(slaves);
 	freeQueue(filesQueue);
@@ -105,6 +101,8 @@ int main(int argc, char const* argv[])
 	semctl(semaphoreId, 0, IPC_RMID, arguments);
 	shmdt(sharedMemoryAddress);
 	shmctl(sharedMemoryId, IPC_RMID, NULL);
+
+	printf("Application process ending...\n");
 
 	return 0;
 }

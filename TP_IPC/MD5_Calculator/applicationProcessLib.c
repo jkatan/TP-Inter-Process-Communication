@@ -19,7 +19,6 @@ int calculateQuantityOfSlaveProcessesToCreate(int quantityOfFiles)
 
 void createSlaveProcesses(slaveADT * slaves, int quantityOfSlaves)
 {
-	printf("Program creating slaves... \n");
 	int pipeToSlave[2] = {-1,-1};
 	int pipeToApplication[2] = {-1,-1};
 	int i, pid = getpid();
@@ -100,7 +99,6 @@ void send(slaveADT slave, char* file)
 	int i;
 	int fileLength = strlen(file);
 	char* fileToSend = calloc((fileLength + 1) , sizeof(char));
-	printf("Sending file (%s) from application to Slave %d\n",file,slave->slavePID);
 	for(i = 0; i < fileLength; i++)
 	{
 		fileToSend[i] = file[i];
