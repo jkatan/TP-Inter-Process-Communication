@@ -8,6 +8,7 @@
 #include "hashedFile.h"
 #include "sharedMemory.h"
 #include "semaphore.h"
+#include "queuelib.h"
 
 typedef struct slaveCDT* slaveADT;
 
@@ -23,12 +24,14 @@ int calculateQuantityOfSlaveProcessesToCreate(int quantityOfFiles);
 void createSlaveProcesses(slaveADT* slaves, int quantityOfSlaves);
 slaveADT createSlave(int writeToSlave, int readFromSlave, int pid);
 void terminateSlaves(slaveADT slaves[], int quantityOfSlaves);
-int sendFiles(slaveADT* slaves, int quantityOfSlaves, char** files, int quantityOfFiles, int nextFile);
+void sendFiles(slaveADT* slaves, int quantityOfSlaves, queueADT filesQueue);
 void send(slaveADT slave, char* file);
 int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddress, int maxReadFileDescriptor);
 int receiveHash(slaveADT slave,  int* sharedMemory);
 void terminateSlave(slaveADT slave);
 int getMaxReadFileDescriptor(slaveADT* slaves, int quantityOfSlaves);
 void sendSharedMemoryDataToNewFile(char* newFileName, int* sharedMemoryAddress);
+void enqueueFiles(queueADT myQueue, char* files[], int numberOfFiles);
+int isARegularFile(char* path);
 
 #endif
