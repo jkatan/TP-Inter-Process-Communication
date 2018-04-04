@@ -101,7 +101,7 @@ void send(slaveADT slave, char* file)
 	int i;
 	int fileLength = strlen(file);
 	char* fileToSend = calloc((fileLength + 1) , sizeof(char));
-
+	printf("Sending file (%s) from application to Slave %d\n",file,slave->slavePID);
 	for(i = 0; i < fileLength; i++)
 	{
 		fileToSend[i] = file[i];
@@ -202,6 +202,6 @@ void enqueueFiles(queueADT myQueue, char* files[], int numberOfFiles)
 int isARegularFile(char* path)
 {
 	struct stat buffer;
-   	stat(path, &buffer);
-   	return S_ISREG(buffer.st_mode);
+  stat(path, &buffer);
+  return S_ISREG(buffer.st_mode);
 }

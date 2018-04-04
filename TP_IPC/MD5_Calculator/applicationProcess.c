@@ -17,6 +17,7 @@
 
 int main(int argc, char const* argv[])
 {
+	char** files = (char **)(argv+1);
 	int pid = getpid();
 	int* sharedMemoryAddress;
 	int position = 1;
@@ -25,10 +26,11 @@ int main(int argc, char const* argv[])
 	int semaphoreId;
 	key_t key;
 	int quantityOfHashesReceived = 0;
+	int quantityOfHashesExpected = 0;
 	int quantityOfFiles = argc-1;
 
 	queueADT filesQueue = createQueue(argc);
-	enqueueFiles(filesQueue, argv, argc);
+	enqueueFiles(filesQueue, files, quantityOfFiles);
 
 	printf("Application process starting... \n");
 	printf("PID of application process: %d \n", getpid());
@@ -84,10 +86,8 @@ int main(int argc, char const* argv[])
 	/*set select for FileDescriptrs*/
 	printf("Program processing... \nTotal quantity of files: %d \n", filesQueue->actualSize);
 	/*Processing files*/
-	while(!isEmpty(filesQueue)){
-		printf("%s \n", dequeueElement(filesQueue));
-	}
-	while(!isEmpty(filesQueue))
+	quantityOfHashesExpected = filesQueue->actualSize;
+	while(quantityOfHashesReceived < quantityOfHashesExpected)
 	{
 			sendFiles(slaves, quantityOfSlaves, filesQueue);
 			accessSharedMemory(semaphoreId);
@@ -109,4 +109,3 @@ int main(int argc, char const* argv[])
 
 	return 0;
 }
-
