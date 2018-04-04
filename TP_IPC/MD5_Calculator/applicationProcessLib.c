@@ -10,6 +10,8 @@
 #include "hashedFile.h"
 #include "applicationProcessLib.h"
 #include "queuelib.h"
+#include "sharedMemory.h"
+
 
 
 int calculateQuantityOfSlaveProcessesToCreate(int quantityOfFiles)
@@ -109,7 +111,7 @@ void send(slaveADT slave, char* file)
 
 }
 
-int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddress, int maxReadFileDescriptor)
+int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddress, int maxReadFileDescriptor,  int semaphoreId)
 {
 	int i, quantityOfHashesReceived = 0;
 	fd_set fileDescriptorSetToReadFromSlaves;
@@ -118,11 +120,8 @@ int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddr
 	FD_ZERO(&fileDescriptorSetToReadFromSlaves);
 	for(i = 0; i <  quantityOfSlaves; i++)
 	{
-
 		FD_SET(slaves[i]->readFrom, &fileDescriptorSetToReadFromSlaves);
 	}
-
-
 	selectRet = select(maxReadFileDescriptor, &fileDescriptorSetToReadFromSlaves, NULL, NULL, NULL);
 
 	if(selectRet == -1)
@@ -135,16 +134,17 @@ int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddr
 	{
 		if(FD_ISSET(slaves[i]->readFrom, &fileDescriptorSetToReadFromSlaves))
 		{
-			quantityOfHashesReceived += receiveHash(slaves[i], sharedMemoryAddress);
+			quantityOfHashesReceived += receiveHash(slaves[i], sharedMemoryAddress, semaphoreId);
 			slaves[i]->filesGivenToProcess--;
 		}
 	}
 	return quantityOfHashesReceived;
 }
 
-int receiveHash(slaveADT slave, int* sharedMemoryAddress)
+int receiveHash(slaveADT slave, int* sharedMemoryAddress, int semaphoreId)
 {
 	int end = 0;
+	accessSharedMemory(semaphoreId);
 	int position = sharedMemoryAddress[0];
 	while(!end && read(slave->readFrom,(sharedMemoryAddress+position), 1) >=0)
 	{
@@ -155,6 +155,7 @@ int receiveHash(slaveADT slave, int* sharedMemoryAddress)
 		position++;
 	}
 	sharedMemoryAddress[0] = position;
+	leaveSharedMemory(semaphoreId);
 	return 1;
 }
 

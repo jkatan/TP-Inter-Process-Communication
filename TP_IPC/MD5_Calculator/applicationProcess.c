@@ -11,35 +11,37 @@
 #include <sys/shm.h>
 #include "applicationProcessLib.h"
 #include "queuelib.h"
+#include "sharedMemory.h"
 
 int main(int argc, char const* argv[])
 {
 	char** files = (char **)(argv+1);
 	slaveADT* slaves;
 	int quantityOfSlaves, maxReadFileDescriptor;
-	int* sharedMemoryAddress; int sharedMemoryId;
+	int* sharedMemoryAddress;
+	int sharedMemoryId;
 	int semaphoreId;
 	key_t key;
 	int quantityOfHashesReceived = 0, quantityOfHashesExpected = 0, quantityOfFiles = argc-1;
 	int pid = getpid();
-
-	printf("Application process starting...\n");
 
 	queueADT filesQueue = createQueue(argc);
 	enqueueFiles(filesQueue, files, quantityOfFiles);
 
 	quantityOfSlaves = calculateQuantityOfSlaveProcessesToCreate(filesQueue->actualSize);
 
-	slaves = malloc(quantityOfSlaves * sizeof(slaveADT)); // preguntar
+	printf("Application process starting... \n");
+
+	slaves = malloc(quantityOfSlaves * sizeof(slaveADT));
 	createSlaveProcesses(slaves, quantityOfSlaves);
 	maxReadFileDescriptor = getMaxReadFileDescriptor(slaves, quantityOfSlaves) + 1;
 
 	/*Creating semaphore*/
 	union semun
 	{
-               int val;
-               struct semid_ds *buf;
-               ushort *array;
+		int val;
+		struct semid_ds *buf;
+		ushort *array;
   } arguments;
 	arguments.val = 1;
 
@@ -73,8 +75,8 @@ int main(int argc, char const* argv[])
 	}
 
 	accessSharedMemory(semaphoreId);
-	sharedMemoryAddress[0] = 2;
-	sharedMemoryAddress[1] = 0;
+	sharedMemoryAddress[0] = FIRST_POSITION_TO_WRITE;
+	sharedMemoryAddress[1] = VIEW_PROCESS_START_FLAG;
 	leaveSharedMemory(semaphoreId);
 
 	/*Processing files*/
@@ -82,9 +84,7 @@ int main(int argc, char const* argv[])
 	while(quantityOfHashesReceived < quantityOfHashesExpected)
 	{
 		sendFiles(slaves, quantityOfSlaves, filesQueue);
-		accessSharedMemory(semaphoreId);
-		quantityOfHashesReceived += receiveHashes(slaves, quantityOfSlaves, sharedMemoryAddress, maxReadFileDescriptor);
-		leaveSharedMemory(semaphoreId);
+		quantityOfHashesReceived += receiveHashes(slaves, quantityOfSlaves, sharedMemoryAddress, maxReadFileDescriptor, semaphoreId);
 	}
 
 	/*End Process*/
@@ -93,7 +93,7 @@ int main(int argc, char const* argv[])
 	freeQueue(filesQueue);
 
 	accessSharedMemory(semaphoreId);
-	sharedMemoryAddress[1] = 1; //signals viewProcess to end
+	sharedMemoryAddress[1] = VIEW_PROCESS_END_FLAG;
 	leaveSharedMemory(semaphoreId);
 
 	sendSharedMemoryDataToNewFile("SavedHashes.txt", sharedMemoryAddress);

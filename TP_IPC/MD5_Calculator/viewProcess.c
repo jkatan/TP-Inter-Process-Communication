@@ -15,13 +15,15 @@ int main (int argc, char *argv[])
   int sharedMemoryId, semaphoreId;
   int* sharedMemoryAddress;
   key_t key;
-  int appProcessPid; 
+  int appProcessPid;
 
   if(argc < 2)
   {
     printf("No arguments passed to program, viewProcess receives one argument\n");
     exit(0);
   }
+
+  appProcessPid = atoi(argv[1]);
 
   key = ftok("./Makefile", appProcessPid);
 
