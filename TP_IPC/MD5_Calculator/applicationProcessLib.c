@@ -45,8 +45,6 @@ void createSlaveProcesses(slaveADT * slaves, int quantityOfSlaves)
 								bufferArg2, NULL}; //where slaveProcess must write
 			execvp(arguments[0], arguments);
 		}
-
-
 		close(pipeToSlave[0]);
 		close(pipeToApplication[1]);
 		slaves[i] = createSlave(pipeToApplication[0],pipeToSlave[1], pid);
@@ -126,6 +124,7 @@ int receiveHashes(slaveADT* slaves,  int quantityOfSlaves, int* sharedMemoryAddr
 
 	if(selectRet == -1)
 	{
+		terminateSlaves(slaves, quantityOfSlaves);
 		perror("Failed to select() file descriptors from slave");
 		exit(1);
 	}

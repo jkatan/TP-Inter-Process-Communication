@@ -48,17 +48,20 @@ int main(int argc, char const* argv[])
 	if((key = ftok("./Makefile", pid)) == -1)
 	{
 		perror("Couldn't create semaphore:");
+		terminateSlaves(slaves, quantityOfSlaves);
 		exit(1);
 	}
 
 	if((semaphoreId = semget(key, 1, IPC_CREAT | 0600)) == -1)
 	{
 		perror("Couldn't get semaphore");
+		terminateSlaves(slaves, quantityOfSlaves);
 		exit(1);
 	}
 	if(semctl(semaphoreId, 0, SETVAL, arguments) == -1)
 	{
 		perror("Couldn't init semaphore:");
+		terminateSlaves(slaves, quantityOfSlaves);
 		exit(1);
 	}
 
@@ -66,11 +69,13 @@ int main(int argc, char const* argv[])
 	if((sharedMemoryId = shmget(key, SHARED_MEMORY_SIZE, 0777 | IPC_CREAT)) == -1)
 	{
     perror("Couldn't create shared memory");
+		terminateSlaves(slaves, quantityOfSlaves);
     exit(1);
   }
 	if((int)(sharedMemoryAddress = shmat(sharedMemoryId, (void *)0, 0)) ==-1)
 	{
 		perror("Couldn't map memory");
+		terminateSlaves(slaves, quantityOfSlaves);
 		exit(1);
 	}
 
