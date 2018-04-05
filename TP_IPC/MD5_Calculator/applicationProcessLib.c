@@ -7,10 +7,12 @@
 #include <sys/types.h>
 #include <sys/select.h>
 #include <sys/stat.h>
+#include <sys/sem.h>
 #include "hashedFile.h"
 #include "applicationProcessLib.h"
 #include "queuelib.h"
-#include "sharedMemory.h"
+
+
 
 
 
@@ -155,7 +157,6 @@ int receiveHash(slaveADT slave, int* sharedMemoryAddress, int semaphoreId)
 	}
 	sharedMemoryAddress[0] = position;
 	leaveSharedMemory(semaphoreId);
-
 	return 1;
 }
 
@@ -203,4 +204,30 @@ int isARegularFile(char* pathToFile)
 	struct stat buffer;
   stat(pathToFile, &buffer);
   return S_ISREG(buffer.st_mode);
+}
+
+void accessSharedMemory(int semaphoreId)
+{
+  struct sembuf semaphoreBuffer;
+  semaphoreBuffer.sem_op = -1;
+  semaphoreBuffer.sem_num = 0;
+  semaphoreBuffer.sem_flg = 0;
+  if(semop(semaphoreId, &semaphoreBuffer, 1) == -1)
+  {
+    perror("Couldn't leave shared memory by changing semaphore");
+    exit(1);
+  }
+}
+
+void leaveSharedMemory(int semaphoreId)
+{
+  struct sembuf semaphoreBuffer;
+  semaphoreBuffer.sem_op = 1;
+  semaphoreBuffer.sem_num = 0;
+  semaphoreBuffer.sem_flg = 0;
+  if(semop(semaphoreId, &semaphoreBuffer, 1) == -1)
+  {
+    perror("Couldn't leave shared memory by changing semaphore");
+    exit(1);
+  }
 }

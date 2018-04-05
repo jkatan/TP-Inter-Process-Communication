@@ -7,7 +7,7 @@
 #include <sys/stat.h>
 #include <sys/sem.h>
 #include <unistd.h>
-#include "sharedMemory.h"
+#include "applicationProcessLib.h"
 
 int main (int argc, char *argv[])
 {
