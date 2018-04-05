@@ -28,7 +28,7 @@ int main (int argc, char *argv[])
   key = ftok("./Makefile", appProcessPid);
 
   /*Get semaphore*/
-  if((semaphoreId = semget(key, 1, IPC_CREAT | 0600)) == -1)
+  if((semaphoreId = semget(key, 1, IPC_CREAT | 0700)) == -1)
   {
     perror("Couldn't get semaphore");
     exit(1);
@@ -40,7 +40,7 @@ int main (int argc, char *argv[])
     perror("Couldn't create shared memory");
     exit(1);
   }
-  if((int)(sharedMemoryAddress = shmat(sharedMemoryId, (void *)0, 0)) == -1)
+  if((sharedMemoryAddress = shmat(sharedMemoryId, (void *)0, 0)) == (int*)-1)
   {
 
     perror("Couldn't map memory");

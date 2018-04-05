@@ -35,7 +35,6 @@ int main(int argc, char const* argv[])
 	slaves = malloc(quantityOfSlaves * sizeof(slaveADT));
 	createSlaveProcesses(slaves, quantityOfSlaves);
 	maxReadFileDescriptor = getMaxReadFileDescriptor(slaves, quantityOfSlaves) + 1;
-
 	/*Creating semaphore*/
 	union semun
 	{
@@ -52,7 +51,7 @@ int main(int argc, char const* argv[])
 		exit(1);
 	}
 
-	if((semaphoreId = semget(key, 1, IPC_CREAT | 0600)) == -1)
+	if((semaphoreId = semget(key, 1, IPC_CREAT | 0700)) == -1)
 	{
 		perror("Couldn't get semaphore");
 		terminateSlaves(slaves, quantityOfSlaves);
@@ -72,7 +71,7 @@ int main(int argc, char const* argv[])
 		terminateSlaves(slaves, quantityOfSlaves);
     exit(1);
   }
-	if((int)(sharedMemoryAddress = shmat(sharedMemoryId, (void *)0, 0)) ==-1)
+	if((sharedMemoryAddress = shmat(sharedMemoryId, (void *)0, 0)) == (int*)-1)
 	{
 		perror("Couldn't map memory");
 		terminateSlaves(slaves, quantityOfSlaves);

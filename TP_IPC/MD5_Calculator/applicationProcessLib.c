@@ -155,6 +155,7 @@ int receiveHash(slaveADT slave, int* sharedMemoryAddress, int semaphoreId)
 	}
 	sharedMemoryAddress[0] = position;
 	leaveSharedMemory(semaphoreId);
+
 	return 1;
 }
 
