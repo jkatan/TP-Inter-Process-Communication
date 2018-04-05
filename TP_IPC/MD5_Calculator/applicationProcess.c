@@ -57,7 +57,7 @@ int main(int argc, char const* argv[])
 		terminateSlaves(slaves, quantityOfSlaves);
 		exit(1);
 	}
-	if(semctl(semaphoreId, 0, SETVAL, arguments) == -1)
+	if(semctl(semaphoreId, 0, SETVAL, &arguments) == -1)
 	{
 		perror("Couldn't init semaphore:");
 		terminateSlaves(slaves, quantityOfSlaves);
@@ -82,7 +82,7 @@ int main(int argc, char const* argv[])
 	sharedMemoryAddress[0] = FIRST_POSITION_TO_WRITE;
 	sharedMemoryAddress[1] = VIEW_PROCESS_START_FLAG;
 	leaveSharedMemory(semaphoreId);
-
+	sleep(20);
 	/*Processing files*/
 	quantityOfHashesExpected = filesQueue->actualSize;
 	while(quantityOfHashesReceived < quantityOfHashesExpected)
