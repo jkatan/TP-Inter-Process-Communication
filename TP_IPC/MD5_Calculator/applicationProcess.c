@@ -82,7 +82,7 @@ int main(int argc, char const* argv[])
 	sharedMemoryAddress[0] = FIRST_POSITION_TO_WRITE;
 	sharedMemoryAddress[1] = VIEW_PROCESS_START_FLAG;
 	leaveSharedMemory(semaphoreId);
-	sleep(25);
+
 	/*Processing files*/
 	quantityOfHashesExpected = filesQueue->actualSize;
 	while(quantityOfHashesReceived < quantityOfHashesExpected)
